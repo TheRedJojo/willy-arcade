@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Defender | RetroLab Arcade</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body>
+<div class="crt-overlay" aria-hidden="true"></div>
+
+<header class="site-header">
+    <div class="container header-content">
+        <a href="./index.html" class="brand">
+            <span class="brand-icon">👾</span>
+            <span class="brand-text">RetroLab <span class="neon-cyan">Arcade</span></span>
+        </a>
+        <nav class="main-nav" aria-label="Navigazione principale">
+            <a href="./index.html" class="nav-link">Catalogo</a>
+            <a href="./play_original.html" class="nav-link active">Giochi Originali</a>
+            <a href="./play_retro.html" class="nav-link">Retro Emulator</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container main-content">
+    <div class="game-stage-wrapper">
+        <div class="hud-bar" role="status" aria-live="polite">
+            <div class="hud-item">SCORE: <span id="hud-score">0</span></div>
+            <div class="hud-item">BEST: <span id="hud-best">0</span></div>
+            <div class="hud-item">WAVE: <span id="hud-wave">1</span></div>
+            <div class="hud-item">LIVES: <span id="hud-lives">3</span></div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="game-canvas" width="800" height="520" aria-label="Area di gioco Space Defender"></canvas>
+        </div>
+
+        <div class="touch-controls" aria-label="Controlli touch">
+            <button type="button" id="touch-left" class="touch-btn">◀ SINISTRA</button>
+            <button type="button" id="touch-fire" class="touch-btn">🔥 FUOCO</button>
+            <button type="button" id="touch-right" class="touch-btn">DESTRA ▶</button>
+        </div>
+
+        <div class="controls-bar">
+            <div class="crypto-status" id="game-save-status">
+                Comandi: <strong>Frecce / A-D</strong> per muoverti • <strong>Spazio</strong> per sparare • <strong>P</strong> per pausa
+            </div>
+            <div class="storage-buttons">
+                <button type="button" id="btn-restart-game" class="btn btn-primary">Nuova Partita</button>
+                <a href="./index.html" class="btn btn-outline">Torna al Catalogo</a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-content">
+        <p>Space Defender — Motore HTML5 Canvas 2D + Web Audio API.</p>
+        <p class="footer-note">I record vengono salvati automaticamente in localStorage con digest SHA-256.</p>
+    </div>
+</footer>
+
+<script src="./assets/js/storage_crypto.js"></script>
+<script src="./assets/js/space_game.js"></script>
+</body>
+</html>
