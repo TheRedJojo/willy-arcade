@@ -1,118 +1,222 @@
 {
   "updatedAt": "2026-11-25",
-  "note": "Catalogo ROM Game Boy in ./assets/roms/gb/.",
+  "note": "Catalogo ROM per GB, SNES, NES, N64, PSX e GBA.",
   "items": [
     {
       "id": "gb-donkey-kong",
       "title": "Donkey Kong",
       "console": "gb",
-      "file": "./assets/roms/gb/donkey_kong.gb",
-      "description": "Classico platform/puzzle Game Boy."
+      "file": "./assets/roms/gb/donkey_kong.gb"
     },
     {
       "id": "gb-kirby",
       "title": "Kirby",
       "console": "gb",
-      "file": "./assets/roms/gb/kirby.gb",
-      "description": "Avventura platform Game Boy."
+      "file": "./assets/roms/gb/kirby.gb"
     },
     {
       "id": "gb-zelda",
       "title": "The Legend of Zelda",
       "console": "gb",
-      "file": "./assets/roms/gb/zelda.gb",
-      "description": "Avventura d'azione e puzzle Game Boy."
+      "file": "./assets/roms/gb/zelda.gb"
     },
     {
       "id": "gb-mario-land-2",
       "title": "Super Mario Land 2",
       "console": "gb",
-      "file": "./assets/roms/gb/mario_land_2.gb",
-      "description": "Platform Game Boy con i 6 Golden Coins."
+      "file": "./assets/roms/gb/mario_land_2.gb"
     },
     {
       "id": "gb-mega-man",
       "title": "Mega Man",
       "console": "gb",
-      "file": "./assets/roms/gb/mega_man.gb",
-      "description": "Action platformer Game Boy."
+      "file": "./assets/roms/gb/mega_man.gb"
     },
     {
       "id": "gb-metroid",
       "title": "Metroid",
       "console": "gb",
-      "file": "./assets/roms/gb/metroid.gb",
-      "description": "Esplorazione e azione fantascientifica Game Boy."
+      "file": "./assets/roms/gb/metroid.gb"
     },
     {
       "id": "gb-pokemon-blue",
       "title": "Pokemon Blue",
       "console": "gb",
-      "file": "./assets/roms/gb/pokemon_blue.gb",
-      "description": "RPG a turni Game Boy."
+      "file": "./assets/roms/gb/pokemon_blue.gb"
     },
     {
       "id": "gb-pokemon-red",
       "title": "Pokemon Red",
       "console": "gb",
-      "file": "./assets/roms/gb/pokemon_red.gb",
-      "description": "RPG a turni Game Boy."
+      "file": "./assets/roms/gb/pokemon_red.gb"
     },
     {
       "id": "gb-pokemon-yellow",
       "title": "Pokemon Yellow",
       "console": "gb",
-      "file": "./assets/roms/gb/pokemon_yellow.gb",
-      "description": "RPG a turni Game Boy."
+      "file": "./assets/roms/gb/pokemon_yellow.gb"
     },
     {
       "id": "gb-road-rash",
       "title": "Road Rash",
       "console": "gb",
-      "file": "./assets/roms/gb/road_rash.gb",
-      "description": "Corse arcade su moto Game Boy."
+      "file": "./assets/roms/gb/road_rash.gb"
     },
     {
       "id": "gb-mario-land",
       "title": "Super Mario Land",
       "console": "gb",
-      "file": "./assets/roms/gb/mario_land.gb",
-      "description": "Primo platform di Mario per Game Boy."
+      "file": "./assets/roms/gb/mario_land.gb"
     },
     {
       "id": "gb-tennis",
       "title": "Tennis",
       "console": "gb",
-      "file": "./assets/roms/gb/tennis.gb",
-      "description": "Classico sportivo Game Boy."
+      "file": "./assets/roms/gb/tennis.gb"
     },
     {
       "id": "gb-tetris",
       "title": "Tetris",
       "console": "gb",
-      "file": "./assets/roms/gb/tetris.gb",
-      "description": "Puzzle arcade per eccellenza su Game Boy."
+      "file": "./assets/roms/gb/tetris.gb"
     },
     {
       "id": "gb-wario",
       "title": "Wario Land",
       "console": "gb",
-      "file": "./assets/roms/gb/wario.gb",
-      "description": "Platform Game Boy con Wario."
+      "file": "./assets/roms/gb/wario.gb"
     },
     {
       "id": "gb-wario-2",
       "title": "Wario Land 2",
       "console": "gb",
-      "file": "./assets/roms/gb/wario2.gb",
-      "description": "Secondo capitolo Game Boy di Wario."
+      "file": "./assets/roms/gb/wario2.gb"
     },
     {
       "id": "gb-wario-3",
       "title": "Wario Land 3",
       "console": "gb",
-      "file": "./assets/roms/gb/wario3.gb",
-      "description": "Terzo capitolo Game Boy di Wario."
+      "file": "./assets/roms/gb/wario3.gb"
+    },
+    {
+      "id": "snes-mario-world",
+      "title": "Super Mario World",
+      "console": "snes",
+      "file": "./assets/roms/snes/mario_world.sfc"
+    },
+    {
+      "id": "snes-mario-all-stars",
+      "title": "Super Mario All-Stars",
+      "console": "snes",
+      "file": "./assets/roms/snes/mario_all_stars.sfc"
+    },
+    {
+      "id": "snes-mario-kart",
+      "title": "Super Mario Kart",
+      "console": "snes",
+      "file": "./assets/roms/snes/mario_kart.sfc"
+    },
+    {
+      "id": "snes-super-metroid",
+      "title": "Super Metroid",
+      "console": "snes",
+      "file": "./assets/roms/snes/super_metroid.sfc"
+    },
+    {
+      "id": "snes-mario-world-2",
+      "title": "Super Mario World 2: Yoshi's Island",
+      "console": "snes",
+      "file": "./assets/roms/snes/mario_world2.sfc"
+    },
+    {
+      "id": "snes-street-fighter",
+      "title": "Street Fighter",
+      "console": "snes",
+      "file": "./assets/roms/snes/street_fighter.sfc"
+    },
+    {
+      "id": "nes-donkey-kong",
+      "title": "Donkey Kong",
+      "console": "nes",
+      "file": "./assets/roms/nes/donkey_kong-n.nes"
+    },
+    {
+      "id": "nes-mario-bros",
+      "title": "Mario Bros.",
+      "console": "nes",
+      "file": "./assets/roms/nes/mario_bros.nes"
+    },
+    {
+      "id": "nes-mario-bros-2",
+      "title": "Super Mario Bros. 2",
+      "console": "nes",
+      "file": "./assets/roms/nes/mario_bros2.nes"
+    },
+    {
+      "id": "nes-mario-bros-3",
+      "title": "Super Mario Bros. 3",
+      "console": "nes",
+      "file": "./assets/roms/nes/mario_bros3.nes"
+    },
+    {
+      "id": "nes-tetris",
+      "title": "Tetris",
+      "console": "nes",
+      "file": "./assets/roms/nes/tetris_n.nes"
+    },
+    {
+      "id": "n64-mario-kart-64",
+      "title": "Mario Kart 64",
+      "console": "n64",
+      "file": "./assets/roms/n64/mario_kart64.z64"
+    },
+    {
+      "id": "n64-paper-mario",
+      "title": "Paper Mario",
+      "console": "n64",
+      "file": "./assets/roms/n64/paper_mario.z64"
+    },
+    {
+      "id": "n64-super-mario-64",
+      "title": "Super Mario 64",
+      "console": "n64",
+      "file": "./assets/roms/n64/mario_64.z64"
+    },
+    {
+      "id": "n64-zelda-ocarina-of-time",
+      "title": "The Legend of Zelda: Ocarina of Time",
+      "console": "n64",
+      "file": "./assets/roms/n64/zelda_ocarina64.z64"
+    },
+    {
+      "id": "n64-zelda-majoras-mask",
+      "title": "The Legend of Zelda: Majora's Mask",
+      "console": "n64",
+      "file": "./assets/roms/n64/zelda_majora64.z64"
+    },
+    {
+      "id": "psx-crash-bandicoot",
+      "title": "Crash Bandicoot",
+      "console": "psx",
+      "file": "./assets/roms/psx/crash_bandicoot.bin"
+    },
+    {
+      "id": "psx-crash-bandicoot-3",
+      "title": "Crash Bandicoot 3: Warped",
+      "console": "psx",
+      "file": "./assets/roms/psx/crash_bandicoot3.bin"
+    },
+    {
+      "id": "psx-spyro",
+      "title": "Spyro the Dragon",
+      "console": "psx",
+      "file": "./assets/roms/psx/spyro.bin"
+    },
+    {
+      "id": "gba-mario-kart-circuit",
+      "title": "Mario Kart: Super Circuit",
+      "console": "gba",
+      "file": "./assets/roms/gba/mario_kart_circuit.gba"
     }
   ]
 }

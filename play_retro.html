@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Retro Emulator | RetroLab Arcade</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,41 +28,51 @@
     <section class="catalog-section">
         <div class="section-header">
             <h1 class="section-title">
-                <span class="text-pink">//</span> Retro Emulator (Lista ROM + Caricamento Locale)
+                <span class="text-pink">//</span> Retro Emulator Multi-Console
             </h1>
-            <span class="section-tag">Desktop &amp; Mobile</span>
+            <span class="section-tag">Lista ROM + File Locale • Mobile Ready</span>
         </div>
 
         <div class="emulator-toolbar">
             <div class="form-group">
-                <label for="console-select" class="form-label">1. Console</label>
+                <label for="console-select" class="form-label">1. Console / Sistema</label>
                 <select id="console-select" class="form-select">
-                    <option value="nes">NES (Nintendo Entertainment System)</option>
-                    <option value="snes">SNES (Super Nintendo)</option>
+                    <option value="nes">Nintendo Entertainment System (NES)</option>
+                    <option value="snes">Super Nintendo (SNES)</option>
                     <option value="gb">Game Boy / Game Boy Color</option>
-                    <option value="gba">Game Boy Advance</option>
-                    <option value="segaMD">Sega Mega Drive / Genesis</option>
-                    <option value="n64">Nintendo 64</option>
+                    <option value="gba">Game Boy Advance (GBA)</option>
+                    <option value="segaMD">Sega Mega Drive / Genesis (MD)</option>
+                    <option value="segaMS">Sega Master System</option>
+                    <option value="segaGG">Sega Game Gear</option>
+                    <option value="n64">Nintendo 64 (N64)</option>
                     <option value="psx">Sony PlayStation (PS1)</option>
+                    <option value="arcade">Arcade / MAME (FBNeo)</option>
+                    <option value="atari2600">Atari 2600</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="rom-list-select" class="form-label">2. Scegli dalla Lista del Sito (./assets/roms/)</label>
+                <label for="rom-filter-input" class="form-label">2. Filtra Lista ROM</label>
+                <input type="search" id="rom-filter-input" class="form-select" placeholder="Cerca titolo nella lista...">
+            </div>
+
+            <div class="form-group">
+                <label for="rom-list-select" class="form-label">3. Lista ROM del Sito (./assets/roms/...)</label>
                 <select id="rom-list-select" class="form-select">
                     <option value="">— Caricamento lista ROM... —</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="rom-file-input" class="form-label">3. Oppure carica una ROM dal tuo dispositivo</label>
-                <input type="file" id="rom-file-input" class="form-file" accept=".nes,.sfc,.smc,.gb,.gbc,.gba,.md,.gen,.bin,.z64,.n64,.v64,.chd,.cue,.iso,.pbp,.zip">
+                <label for="rom-file-input" class="form-label">4. Oppure carica ROM dal dispositivo</label>
+                <input type="file" id="rom-file-input" class="form-file" accept=".nes,.sfc,.smc,.gb,.gbc,.gba,.md,.gen,.bin,.sms,.gg,.z64,.n64,.v64,.chd,.cue,.iso,.pbp,.a26,.zip">
             </div>
 
             <div class="form-group">
-                <span class="form-label">4. Avvio</span>
+                <span class="form-label">5. Avvio &amp; Schermo</span>
                 <div class="storage-buttons">
-                    <button type="button" id="btn-launch-rom" class="btn btn-secondary btn-full">Avvia Emulatore</button>
+                    <button type="button" id="btn-launch-rom" class="btn btn-secondary btn-full">Avvia</button>
+                    <button type="button" id="btn-fullscreen-emu" class="btn btn-outline" title="Schermo intero">⛶</button>
                     <button type="button" id="btn-clear-emu" class="btn btn-outline">Reset</button>
                 </div>
             </div>
@@ -71,7 +81,7 @@
         <div class="panel" style="margin-bottom: 1.15rem;">
             <div class="storage-controls" style="margin-top: 0; padding-top: 0; border-top: none;">
                 <div id="rom-info-status" class="crypto-status">
-                    Seleziona un gioco dalla lista oppure carica un file ROM dal tuo dispositivo.
+                    Suggerimento mobile: ruota il telefono in orizzontale per una visuale più ampia. Il pad touch appare sull'emulatore.
                 </div>
                 <div id="rom-hash-status" class="crypto-status">
                     SHA-256: <code>---</code>
@@ -83,7 +93,7 @@
             <div id="emulator-placeholder" class="emulator-placeholder">
                 <h3>Emulatore Locale Pronto</h3>
                 <p>
-                    Ogni utente esegue l'emulatore nel proprio browser. Puoi usare i giochi elencati in <code>./assets/roms/roms_catalog.json</code> oppure selezionare un file locale (anche su smartphone/tablet con pad touch integrato).
+                    Scegli una ROM dalla lista o carica un file locale dal tuo dispositivo e premi <strong>Avvia</strong>.
                 </p>
             </div>
             <div id="game" style="width: 100%; height: 100%; display: none;"></div>
@@ -93,8 +103,8 @@
 
 <footer class="site-footer">
     <div class="container footer-content">
-        <p>RetroLab Arcade — EmulatorJS lato browser.</p>
-        <p class="footer-note">Includi in ./assets/roms/ solo ROM homebrew o distribuibili legittimamente.</p>
+        <p>RetroLab Arcade — EmulatorJS Multi-Console.</p>
+        <p class="footer-note">ROM supportate: NES, SNES, GB/GBC, GBA, MD, N64, PS1 e file locali.</p>
     </div>
 </footer>
 
