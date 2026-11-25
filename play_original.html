@@ -2,72 +2,126 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Space Defender | RetroLab Arcade</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WILLYS ARCADE!</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 <body>
-<header class="site-header">
-    <div class="container header-content">
-        <a href="./index.html" class="brand">
-            <span class="brand-mark" aria-hidden="true">🕹️</span>
-            <span>RetroLab <span class="text-cyan">Arcade</span></span>
+<header class="topbar">
+    <div class="wrap topbar-inner">
+        <a href="./index.html" class="logo">
+            <span class="logo-icon" aria-hidden="true">🎮</span>
+            <span>WILLY'S <span class="c-cyan">ARCADE</span></span>
         </a>
-        <nav class="main-nav" aria-label="Navigazione principale">
-            <a href="./index.html" class="nav-link">Catalogo</a>
-            <a href="./play_original.html" class="nav-link active">Giochi Originali</a>
-            <a href="./play_retro.html" class="nav-link">Retro Emulator</a>
+        <nav class="nav" aria-label="Navigazione principale">
+            <a href="./index.html" class="nav-a active">Home</a>
+            <a href="./play_original.html" class="nav-a">Giochi</a>
+            <a href="./play_retro.html" class="nav-a">Emulatore</a>
         </nav>
     </div>
 </header>
 
-<main class="container main-content">
-    <div class="game-stage-wrapper">
+<main class="wrap page-main">
+    <div id="game-switcher" class="picker-bar" role="tablist" aria-label="Seleziona gioco"></div>
+
+    <div class="play-stage">
+        <div class="match-toolbar">
+            <div class="seg-group" role="group" aria-label="Difficoltà">
+                <span class="seg-label">Difficoltà:</span>
+                <button type="button" class="seg-btn" data-diff="easy">Facile</button>
+                <button type="button" class="seg-btn active" data-diff="normal">Normale</button>
+                <button type="button" class="seg-btn" data-diff="hard">Difficile</button>
+            </div>
+
+            <div class="seg-group" id="mode-selector" role="group" aria-label="Modalità giocatori">
+                <span class="seg-label">Giocatori:</span>
+                <button type="button" class="seg-btn active" data-pmode="1p">1 Giocatore</button>
+                <button type="button" class="seg-btn" id="btn-mode-2p" data-pmode="2p_local">2P Stesso Schermo</button>
+                <button type="button" class="seg-btn" id="btn-mode-remote" data-pmode="2p_remote">2P Remoto</button>
+            </div>
+
+            <button type="button" id="btn-toggle-guide" class="btn btn-line btn-sm">📖 Come si gioca?</button>
+        </div>
+
+        <!-- Pannello Spiegazione nella pagina: apre e mette in pausa il gioco -->
+        <div id="guide-panel" class="guide-modal" role="region" aria-label="Spiegazione del gioco">
+            <div class="guide-top">
+                <div id="guide-title" class="guide-title">Come si gioca</div>
+                <button type="button" id="btn-close-guide" class="btn btn-cyan btn-sm">Riprendi Gioco ▶</button>
+            </div>
+            <p id="guide-text" class="note-line">Caricamento spiegazione...</p>
+            <p id="guide-controls" class="note-line"><strong>Comandi:</strong> Caricamento...</p>
+        </div>
+
+        <!-- Pannello 2P Remoto -->
+        <div id="remote-panel" class="remote-box" role="region" aria-label="Collegamento 2P Remoto">
+            <div class="note-line">
+                <strong>2P Remoto (WebRTC senza server):</strong>
+                1) Il Giocatore 1 preme <em>Crea Offerta</em> e invia il codice al Giocatore 2.
+                2) Il Giocatore 2 incolla il codice qui, preme <em>Rispondi a Offerta</em> e rimanda il codice risposta.
+                3) Il Giocatore 1 incolla la risposta e preme <em>Collega Risposta</em>.
+                <br><span id="remote-env-warning" class="warn"></span>
+            </div>
+            <div class="remote-row">
+                <button type="button" id="btn-remote-create" class="btn btn-cyan btn-sm">1. Crea Offerta</button>
+                <button type="button" id="btn-remote-answer" class="btn btn-coral btn-sm">2. Rispondi a Offerta</button>
+                <button type="button" id="btn-remote-accept" class="btn btn-line btn-sm">3. Collega Risposta</button>
+                <span id="remote-conn-status" class="note-line">Stato: <code>pronto</code></span>
+            </div>
+            <textarea id="remote-sdp-box" class="remote-code" rows="2" placeholder="Incolla qui il codice offerta o risposta, oppure copialo da qui dopo aver premuto un bottone..."></textarea>
+        </div>
+
         <div class="hud-bar" role="status" aria-live="polite">
-            <div class="hud-item">SCORE: <span id="hud-score">0</span></div>
-            <div class="hud-item">BEST: <span id="hud-best">0</span></div>
-            <div class="hud-item">WAVE: <span id="hud-wave">1</span></div>
-            <div class="hud-item">LIVES: <span id="hud-lives">3</span></div>
+            <div>GIOCO: <span id="hud-game">Space Defender</span></div>
+            <div>SCORE: <span id="hud-score">0</span></div>
+            <div>BEST: <span id="hud-best">0</span></div>
+            <div>MODO: <span id="hud-mode">1P • NORMALE</span></div>
         </div>
 
-        <div class="canvas-container">
-            <canvas id="game-canvas" width="820" height="500" aria-label="Area di gioco Space Defender"></canvas>
+        <div class="screen-frame">
+            <canvas id="game-canvas" width="880" height="500" aria-label="Schermo di gioco"></canvas>
         </div>
 
-        <div class="touch-pad" aria-label="Controlli di gioco">
-            <div class="dpad-group">
-                <button type="button" id="pad-left" class="pad-btn" aria-label="Muovi a sinistra">◀</button>
-                <button type="button" id="pad-right" class="pad-btn" aria-label="Muovi a destra">▶</button>
+        <div class="pad-deck" aria-label="Controlli touch, mouse e pad">
+            <div class="dpad">
+                <button type="button" id="pad-up" class="pad-key d-up" aria-label="Su">▲</button>
+                <button type="button" id="pad-left" class="pad-key d-left" aria-label="Sinistra">◀</button>
+                <button type="button" id="pad-down" class="pad-key d-down" aria-label="Giù">▼</button>
+                <button type="button" id="pad-right" class="pad-key d-right" aria-label="Destra">▶</button>
             </div>
-            <div class="action-pad-group">
-                <button type="button" id="pad-pause" class="pad-btn" aria-label="Pausa">⏸</button>
-                <button type="button" id="pad-fire" class="pad-btn pad-btn-fire" aria-label="Spara">FUOCO</button>
+
+            <div class="pad-btns">
+                <button type="button" id="pad-b" class="pad-key" aria-label="Pausa o Azione B">PAUSA / B</button>
+                <button type="button" id="pad-a" class="pad-key pad-key-go" aria-label="Azione A">AZIONE (A)</button>
             </div>
         </div>
 
-        <div class="controls-bar">
-            <div class="crypto-status" id="game-save-status">
-                Tastiera: <strong>Frecce / A-D</strong> (movimento) • <strong>Spazio / Z</strong> (fuoco) • <strong>P</strong> (pausa) • <strong>R</strong> (riavvia)
+        <div class="box" style="width: 100%; max-width: 880px;">
+            <div id="game-save-status" class="note-line">
+                Tastiera: <strong>Frecce / WASD</strong> • <strong>Spazio / Z / Invio</strong> • <strong>2P Stesso Schermo</strong>: P1 <strong>W/A/S/D + F</strong>, P2 <strong>Frecce + L</strong> • <strong>Controller Bluetooth/USB</strong> supportato
             </div>
-            <div class="storage-buttons">
-                <button type="button" id="btn-restart-game" class="btn btn-primary btn-sm">Nuova Partita</button>
-                <a href="./index.html" class="btn btn-outline btn-sm">Catalogo</a>
+            <div class="box-foot" style="margin-top: 0.65rem; padding-top: 0.65rem;">
+                <span class="note-line">Suggerimento: premi <strong>Come si gioca</strong> in alto per mettere in pausa e leggere le regole.</span>
+                <div class="g-btns">
+                    <button type="button" id="btn-restart-game" class="btn btn-cyan btn-sm">Nuova Partita</button>
+                    <a href="./index.html" class="btn btn-line btn-sm">Catalogo</a>
+                </div>
             </div>
         </div>
     </div>
 </main>
 
-<footer class="site-footer">
-    <div class="container footer-content">
-        <p>Space Defender — HTML5 Canvas + Web Audio API.</p>
-        <p class="footer-note">I record vengono salvati in localStorage con verifica SHA-256.</p>
+<footer class="footbar">
+    <div class="wrap footbar-inner">
+        <p>RetroLab Arcade — 10 giochi completi in HTML5 Canvas.</p>
+        <p>Record salvati automaticamente in locale.</p>
     </div>
 </footer>
 
 <script src="./assets/js/storage_crypto.js"></script>
-<script src="./assets/js/space_game.js"></script>
+<script src="./assets/js/original_games.js"></script>
 </body>
 </html>

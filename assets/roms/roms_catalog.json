@@ -195,24 +195,6 @@
       "file": "./assets/roms/n64/zelda_majora64.z64"
     },
     {
-      "id": "psx-crash-bandicoot",
-      "title": "Crash Bandicoot",
-      "console": "psx",
-      "file": "./assets/roms/psx/crash_bandicoot.bin"
-    },
-    {
-      "id": "psx-crash-bandicoot-3",
-      "title": "Crash Bandicoot 3: Warped",
-      "console": "psx",
-      "file": "./assets/roms/psx/crash_bandicoot3.bin"
-    },
-    {
-      "id": "psx-spyro",
-      "title": "Spyro the Dragon",
-      "console": "psx",
-      "file": "./assets/roms/psx/spyro.bin"
-    },
-    {
       "id": "gba-mario-kart-circuit",
       "title": "Mario Kart: Super Circuit",
       "console": "gba",

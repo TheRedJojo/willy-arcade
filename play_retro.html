@@ -10,101 +10,93 @@
     <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 <body>
-<header class="site-header">
-    <div class="container header-content">
-        <a href="./index.html" class="brand">
-            <span class="brand-mark" aria-hidden="true">🕹️</span>
-            <span>RetroLab <span class="text-cyan">Arcade</span></span>
+<header class="topbar">
+    <div class="wrap topbar-inner">
+        <a href="./index.html" class="logo">
+            <span class="logo-icon" aria-hidden="true">🎮</span>
+            <span>WILLY'S <span class="c-cyan">ARCADE</span></span>
         </a>
-        <nav class="main-nav" aria-label="Navigazione principale">
-            <a href="./index.html" class="nav-link">Catalogo</a>
-            <a href="./play_original.html" class="nav-link">Giochi Originali</a>
-            <a href="./play_retro.html" class="nav-link active">Retro Emulator</a>
+        <nav class="nav" aria-label="Navigazione principale">
+            <a href="./index.html" class="nav-a active">Home</a>
+            <a href="./play_original.html" class="nav-a">Giochi</a>
+            <a href="./play_retro.html" class="nav-a">Emulatore</a>
         </nav>
     </div>
 </header>
 
-<main class="container main-content">
-    <section class="catalog-section">
-        <div class="section-header">
-            <h1 class="section-title">
-                <span class="text-pink">//</span> Retro Emulator Multi-Console
-            </h1>
-            <span class="section-tag">Lista ROM + File Locale • Mobile Ready</span>
+<main class="wrap page-main">
+    <section class="sec">
+        <div class="sec-head">
+            <h1 class="sec-title"><span class="c-coral">//</span> Retro Emulator</h1>
+            <span class="pill">Comandi Semplici • Mobile &amp; Controller</span>
         </div>
 
-        <div class="emulator-toolbar">
-            <div class="form-group">
-                <label for="console-select" class="form-label">1. Console / Sistema</label>
-                <select id="console-select" class="form-select">
-                    <option value="nes">Nintendo Entertainment System (NES)</option>
-                    <option value="snes">Super Nintendo (SNES)</option>
-                    <option value="gb">Game Boy / Game Boy Color</option>
-                    <option value="gba">Game Boy Advance (GBA)</option>
-                    <option value="segaMD">Sega Mega Drive / Genesis (MD)</option>
-                    <option value="segaMS">Sega Master System</option>
-                    <option value="segaGG">Sega Game Gear</option>
-                    <option value="n64">Nintendo 64 (N64)</option>
-                    <option value="psx">Sony PlayStation (PS1)</option>
-                    <option value="arcade">Arcade / MAME (FBNeo)</option>
-                    <option value="atari2600">Atari 2600</option>
+        <div class="emu-bar">
+            <div class="ctrl-col">
+                <label for="console-select">1. Console</label>
+                <select id="console-select" class="input-box">
+                    <option value="gb">Game Boy / Color</option>
+                    <option value="gba">Game Boy Advance</option>
+                    <option value="nes">NES</option>
+                    <option value="snes">SNES</option>
+                    <option value="n64">Nintendo 64</option>
+                    <option value="segaMD">Mega Drive</option>
                 </select>
             </div>
 
-            <div class="form-group">
-                <label for="rom-filter-input" class="form-label">2. Filtra Lista ROM</label>
-                <input type="search" id="rom-filter-input" class="form-select" placeholder="Cerca titolo nella lista...">
+            <div class="ctrl-col">
+                <label for="rom-filter-input">2. Filtra Lista</label>
+                <input type="search" id="rom-filter-input" class="input-box" placeholder="Cerca titolo...">
             </div>
 
-            <div class="form-group">
-                <label for="rom-list-select" class="form-label">3. Lista ROM del Sito (./assets/roms/...)</label>
-                <select id="rom-list-select" class="form-select">
-                    <option value="">— Caricamento lista ROM... —</option>
+            <div class="ctrl-col">
+                <label for="rom-list-select">3. Lista ROM</label>
+                <select id="rom-list-select" class="input-box">
+                    <option value="">— Caricamento... —</option>
                 </select>
             </div>
 
-            <div class="form-group">
-                <label for="rom-file-input" class="form-label">4. Oppure carica ROM dal dispositivo</label>
-                <input type="file" id="rom-file-input" class="form-file" accept=".nes,.sfc,.smc,.gb,.gbc,.gba,.md,.gen,.bin,.sms,.gg,.z64,.n64,.v64,.chd,.cue,.iso,.pbp,.a26,.zip">
+            <div class="ctrl-col">
+                <label for="rom-file-input">4. Oppure File Locale</label>
+                <input type="file" id="rom-file-input" class="input-box" accept=".gb,.gbc,.gba,.nes,.sfc,.smc,.z64,.n64,.v64,.md,.gen,.zip">
             </div>
 
-            <div class="form-group">
-                <span class="form-label">5. Avvio &amp; Schermo</span>
-                <div class="storage-buttons">
-                    <button type="button" id="btn-launch-rom" class="btn btn-secondary btn-full">Avvia</button>
-                    <button type="button" id="btn-fullscreen-emu" class="btn btn-outline" title="Schermo intero">⛶</button>
-                    <button type="button" id="btn-clear-emu" class="btn btn-outline">Reset</button>
+            <div class="ctrl-col">
+                <span class="ctrl-lbl">5. Avvio</span>
+                <div class="g-btns">
+                    <button type="button" id="btn-launch-rom" class="btn btn-coral btn-grow">Avvia</button>
+                    <button type="button" id="btn-fullscreen-emu" class="btn btn-line" title="Schermo intero">⛶</button>
+                    <button type="button" id="btn-clear-emu" class="btn btn-line">Reset</button>
                 </div>
             </div>
         </div>
 
-        <div class="panel" style="margin-bottom: 1.15rem;">
-            <div class="storage-controls" style="margin-top: 0; padding-top: 0; border-top: none;">
-                <div id="rom-info-status" class="crypto-status">
-                    Suggerimento mobile: ruota il telefono in orizzontale per una visuale più ampia. Il pad touch appare sull'emulatore.
-                </div>
-                <div id="rom-hash-status" class="crypto-status">
-                    SHA-256: <code>---</code>
-                </div>
+        <div class="box" style="margin-bottom: 1rem;">
+            <div class="note-line" style="margin-bottom: 0.45rem;">
+                <strong>Comandi semplificati:</strong>
+                <strong>Frecce</strong> = Muovi • <strong>Z</strong> = B (salto/azione) • <strong>X</strong> = A (spara/conferma) • <strong>Invio</strong> = Start • <strong>Shift</strong> = Select.
+                Su <strong>telefono/tablet</strong> appare il pad touch; puoi collegare un <strong>controller Bluetooth/USB</strong>.
+            </div>
+            <div class="box-foot" style="margin-top: 0.4rem; padding-top: 0.55rem;">
+                <div id="rom-info-status" class="note-line">Pronto. Seleziona una ROM o carica un file locale.</div>
+                <div id="rom-hash-status" class="note-line">SHA-256: <code>---</code></div>
             </div>
         </div>
 
-        <div id="emulator-viewport" class="emulator-viewport" aria-live="polite">
-            <div id="emulator-placeholder" class="emulator-placeholder">
-                <h3>Emulatore Locale Pronto</h3>
-                <p>
-                    Scegli una ROM dalla lista o carica un file locale dal tuo dispositivo e premi <strong>Avvia</strong>.
-                </p>
+        <div id="emulator-viewport" class="emu-stage" aria-live="polite">
+            <div id="emulator-placeholder" class="emu-idle">
+                <h3>Emulatore Pronto</h3>
+                <p>Ruota il telefono in orizzontale per giocare più largo. Tutto gira in locale nel tuo browser.</p>
             </div>
             <div id="game" style="width: 100%; height: 100%; display: none;"></div>
         </div>
     </section>
 </main>
 
-<footer class="site-footer">
-    <div class="container footer-content">
-        <p>RetroLab Arcade — EmulatorJS Multi-Console.</p>
-        <p class="footer-note">ROM supportate: NES, SNES, GB/GBC, GBA, MD, N64, PS1 e file locali.</p>
+<footer class="footbar">
+    <div class="wrap footbar-inner">
+        <p>RetroLab Arcade — EmulatorJS.</p>
+        <p>Usa solo ROM di cui hai diritto o homebrew.</p>
     </div>
 </footer>
 

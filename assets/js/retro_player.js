@@ -1,6 +1,5 @@
 /**
- * RetroPlayer - Emulatore multi-console con lista ROM filtrabile, caricamento locale
- * e supporto ottimizzato per mobile/touch tramite EmulatorJS.
+ * RetroPlayer - Lista ROM + File Locale (senza PS1) con comandi semplificati
  */
 document.addEventListener('DOMContentLoaded', async () => {
     const consoleSelect = document.getElementById('console-select');
@@ -8,304 +7,214 @@ document.addEventListener('DOMContentLoaded', async () => {
     const romListSelect = document.getElementById('rom-list-select');
     const romInput = document.getElementById('rom-file-input');
     const launchBtn = document.getElementById('btn-launch-rom');
-    const fullscreenBtn = document.getElementById('btn-fullscreen-emu');
+    const fsBtn = document.getElementById('btn-fullscreen-emu');
     const clearBtn = document.getElementById('btn-clear-emu');
     const viewport = document.getElementById('emulator-viewport');
     const placeholder = document.getElementById('emulator-placeholder');
-    const romInfoStatus = document.getElementById('rom-info-status');
-    const romHashStatus = document.getElementById('rom-hash-status');
+    const infoEl = document.getElementById('rom-info-status');
+    const hashEl = document.getElementById('rom-hash-status');
 
     if (!consoleSelect || !romListSelect || !romInput || !launchBtn || !clearBtn) return;
 
     const CDN_BASE = 'https://cdn.emulatorjs.org/stable/data/';
     const CATALOG_URL = './assets/roms/roms_catalog.json';
 
-    const CONSOLE_CORES = {
-        nes: { label: 'NES', ejsCore: 'fceumm' },
-        snes: { label: 'SNES', ejsCore: 'snes9x' },
-        gb: { label: 'GB / GBC', ejsCore: 'gambatte' },
-        gba: { label: 'GBA', ejsCore: 'mgba' },
-        segaMD: { label: 'Mega Drive', ejsCore: 'genesis_plus_gx' },
-        segaMS: { label: 'Master System', ejsCore: 'smsplus' },
-        segaGG: { label: 'Game Gear', ejsCore: 'genesis_plus_gx' },
-        n64: { label: 'Nintendo 64', ejsCore: 'mupen64plus_next' },
-        psx: { label: 'PlayStation', ejsCore: 'pcsx_rearmed' },
-        arcade: { label: 'Arcade / MAME', ejsCore: 'fbneo' },
-        atari2600: { label: 'Atari 2600', ejsCore: 'stella2014' }
+    const CORES = {
+        gb: { label: 'GB/GBC', core: 'gambatte' },
+        gba: { label: 'GBA', core: 'mgba' },
+        nes: { label: 'NES', core: 'fceumm' },
+        snes: { label: 'SNES', core: 'snes9x' },
+        n64: { label: 'N64', core: 'mupen64plus_next' },
+        segaMD: { label: 'Mega Drive', core: 'genesis_plus_gx' }
     };
 
-    let catalogItems = [];
-    let selectedLocalFile = null;
-    let selectedLocalBytes = null;
-    let selectedCatalogItem = null;
-    let activeSourceType = null;
-    let currentBlobUrl = null;
-    let emulatorAlreadyStarted = false;
+    let items = [];
+    let localFile = null;
+    let localBytes = null;
+    let catalogPick = null;
+    let source = null;
+    let blobUrl = null;
+    let started = false;
 
-    const params = new URLSearchParams(window.location.search);
-    const initialConsole = params.get('console') || params.get('core');
-    if (initialConsole && CONSOLE_CORES[initialConsole]) {
-        consoleSelect.value = initialConsole;
-    }
-
-    function escapeHtml(str) {
-        return String(str)
+    function esc(s) {
+        return String(s)
             .replaceAll('&', '&amp;')
             .replaceAll('<', '&lt;')
             .replaceAll('>', '&gt;')
             .replaceAll('"', '&quot;');
     }
 
-    function detectConsoleByExtension(filename) {
-        const lower = filename.toLowerCase();
-        if (lower.endsWith('.nes')) return 'nes';
-        if (lower.endsWith('.sfc') || lower.endsWith('.smc')) return 'snes';
-        if (lower.endsWith('.gb') || lower.endsWith('.gbc')) return 'gb';
-        if (lower.endsWith('.gba')) return 'gba';
-        if (lower.endsWith('.md') || lower.endsWith('.gen')) return 'segaMD';
-        if (lower.endsWith('.sms')) return 'segaMS';
-        if (lower.endsWith('.gg')) return 'segaGG';
-        if (lower.endsWith('.z64') || lower.endsWith('.n64') || lower.endsWith('.v64')) return 'n64';
-        if (lower.endsWith('.chd') || lower.endsWith('.cue') || lower.endsWith('.pbp') || lower.endsWith('.iso')) return 'psx';
-        if (lower.endsWith('.a26')) return 'atari2600';
+    function detectConsole(name) {
+        const l = name.toLowerCase();
+        if (l.endsWith('.gb') || l.endsWith('.gbc')) return 'gb';
+        if (l.endsWith('.gba')) return 'gba';
+        if (l.endsWith('.nes')) return 'nes';
+        if (l.endsWith('.sfc') || l.endsWith('.smc')) return 'snes';
+        if (l.endsWith('.z64') || l.endsWith('.n64') || l.endsWith('.v64')) return 'n64';
+        if (l.endsWith('.md') || l.endsWith('.gen')) return 'segaMD';
         return null;
     }
 
-    async function computeBufferSHA256(arrayBuffer) {
-        if (window.crypto && window.crypto.subtle && window.isSecureContext) {
-            const hashBuffer = await window.crypto.subtle.digest('SHA-256', arrayBuffer);
-            return Array.from(new Uint8Array(hashBuffer))
-                .map(b => b.toString(16).padStart(2, '0'))
-                .join('');
+    async function sha256(buf) {
+        if (window.crypto?.subtle && window.isSecureContext) {
+            const h = await window.crypto.subtle.digest('SHA-256', buf);
+            return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
-        return 'non-disponibile-senza-https-o-localhost';
+        return 'non-disponibile';
     }
 
-    function renderCatalogOptions() {
-        const currentConsole = consoleSelect.value;
-        const query = (romFilterInput ? romFilterInput.value : '').trim().toLowerCase();
-
-        const matchingConsole = catalogItems.filter(item =>
-            item.console === currentConsole &&
-            (!query || item.title.toLowerCase().includes(query))
-        );
-
-        const otherConsoles = query
-            ? catalogItems.filter(item =>
-                item.console !== currentConsole &&
-                item.title.toLowerCase().includes(query)
-            )
-            : [];
-
-        const listToShow = [...matchingConsole, ...otherConsoles];
+    function fillList() {
+        const c = consoleSelect.value;
+        const q = (romFilterInput?.value || '').trim().toLowerCase();
+        const filtered = items.filter(x => x.console === c && (!q || x.title.toLowerCase().includes(q)));
 
         romListSelect.innerHTML = '';
-        const defaultOpt = document.createElement('option');
-        defaultOpt.value = '';
-        defaultOpt.textContent = listToShow.length > 0
-            ? `— Seleziona ROM (${listToShow.length} disponibili) —`
-            : '— Nessuna ROM in lista per questa console —';
-        romListSelect.appendChild(defaultOpt);
+        const opt0 = document.createElement('option');
+        opt0.value = '';
+        opt0.textContent = filtered.length ? `— Seleziona ROM (${filtered.length}) —` : '— Nessuna ROM in lista —';
+        romListSelect.appendChild(opt0);
 
-        for (const item of listToShow) {
-            const opt = document.createElement('option');
-            opt.value = item.id;
-            const cLabel = CONSOLE_CORES[item.console]?.label || item.console.toUpperCase();
-            opt.textContent = `[${cLabel}] ${item.title}`;
-            romListSelect.appendChild(opt);
-        }
-    }
-
-    async function loadRomCatalog() {
-        try {
-            const res = await fetch(`${CATALOG_URL}?t=${Date.now()}`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const json = await res.json();
-            catalogItems = Array.isArray(json.items) ? json.items : [];
-            renderCatalogOptions();
-        } catch (err) {
-            console.warn('[RetroPlayer] Lista ROM non caricata:', err);
-            romListSelect.innerHTML = '<option value="">— Lista non trovata (usa file locale) —</option>';
-        }
-    }
-
-    consoleSelect.addEventListener('change', () => {
-        renderCatalogOptions();
-    });
-
-    if (romFilterInput) {
-        romFilterInput.addEventListener('input', () => {
-            renderCatalogOptions();
+        filtered.forEach(x => {
+            const o = document.createElement('option');
+            o.value = x.id;
+            o.textContent = `[${CORES[x.console]?.label || x.console.toUpperCase()}] ${x.title}`;
+            romListSelect.appendChild(o);
         });
     }
 
+    try {
+        const r = await fetch(`${CATALOG_URL}?t=${Date.now()}`);
+        if (r.ok) {
+            const j = await r.json();
+            items = Array.isArray(j.items) ? j.items.filter(x => x.console !== 'psx') : [];
+        }
+    } catch (_) {}
+    fillList();
+
+    consoleSelect.addEventListener('change', fillList);
+    romFilterInput?.addEventListener('input', fillList);
+
     romListSelect.addEventListener('change', async () => {
-        const id = romListSelect.value;
-        if (!id) {
-            selectedCatalogItem = null;
-            if (activeSourceType === 'catalog') activeSourceType = null;
+        const pick = items.find(x => x.id === romListSelect.value);
+        if (!pick) {
+            catalogPick = null;
+            if (source === 'catalog') source = null;
             return;
         }
-
-        const item = catalogItems.find(x => x.id === id);
-        if (!item) return;
-
-        selectedCatalogItem = item;
-        selectedLocalFile = null;
-        selectedLocalBytes = null;
+        catalogPick = pick;
+        localFile = null;
+        localBytes = null;
         romInput.value = '';
-        activeSourceType = 'catalog';
-
-        if (CONSOLE_CORES[item.console]) {
-            consoleSelect.value = item.console;
-            renderCatalogOptions();
-            romListSelect.value = item.id;
-        }
-
-        romInfoStatus.innerHTML = `<span class="status-ok">✔ Lista:</span> <strong>${escapeHtml(item.title)}</strong>`;
-        romHashStatus.innerHTML = 'SHA-256: <code>verifica...</code>';
-
+        source = 'catalog';
+        infoEl.innerHTML = `<span class="ok">✔ Lista:</span> <strong>${esc(pick.title)}</strong>`;
+        hashEl.innerHTML = 'SHA-256: <code>verifica...</code>';
         try {
-            const resp = await fetch(item.file);
-            if (!resp.ok) throw new Error('File non trovato');
-            const buf = await resp.arrayBuffer();
-            const hash = await computeBufferSHA256(buf);
-            romHashStatus.innerHTML = `SHA-256: <code title="${hash}">${hash.slice(0, 16)}...</code>`;
+            const resp = await fetch(pick.file);
+            if (!resp.ok) throw new Error();
+            const h = await sha256(await resp.arrayBuffer());
+            hashEl.innerHTML = `SHA-256: <code title="${h}">${h.slice(0, 14)}...</code>`;
         } catch (_) {
-            romHashStatus.innerHTML = 'SHA-256: <code>file non presente sul server</code>';
+            hashEl.innerHTML = 'SHA-256: <code>file mancante</code>';
         }
     });
 
     romInput.addEventListener('change', async (e) => {
-        const file = e.target.files && e.target.files[0];
-        if (!file) return;
-
-        selectedLocalFile = file;
-        selectedCatalogItem = null;
+        const f = e.target.files?.[0];
+        if (!f) return;
+        localFile = f;
+        catalogPick = null;
         romListSelect.value = '';
-        activeSourceType = 'local';
-
-        const detected = detectConsoleByExtension(file.name);
-        if (detected && CONSOLE_CORES[detected]) {
-            consoleSelect.value = detected;
-            renderCatalogOptions();
+        source = 'local';
+        const det = detectConsole(f.name);
+        if (det && CORES[det]) {
+            consoleSelect.value = det;
+            fillList();
         }
-
-        const sizeMB = file.size / (1024 * 1024);
-        const sizeText = sizeMB >= 1 ? `${sizeMB.toFixed(2)} MB` : `${(file.size / 1024).toFixed(1)} KB`;
-        romInfoStatus.innerHTML = `<span class="status-ok">✔ File locale:</span> <strong>${escapeHtml(file.name)}</strong> (${sizeText})`;
-        romHashStatus.innerHTML = 'SHA-256: <code>calcolo...</code>';
-
+        infoEl.innerHTML = `<span class="ok">✔ File locale:</span> <strong>${esc(f.name)}</strong>`;
+        hashEl.innerHTML = 'SHA-256: <code>calcolo...</code>';
         try {
-            const rawBuf = await file.arrayBuffer();
-            selectedLocalBytes = rawBuf.slice(0);
-            const hash = await computeBufferSHA256(selectedLocalBytes);
-            romHashStatus.innerHTML = `SHA-256: <code title="${hash}">${hash.slice(0, 16)}...</code>`;
+            localBytes = (await f.arrayBuffer()).slice(0);
+            const h = await sha256(localBytes);
+            hashEl.innerHTML = `SHA-256: <code title="${h}">${h.slice(0, 14)}...</code>`;
         } catch (_) {
-            selectedLocalBytes = null;
-            romHashStatus.innerHTML = 'SHA-256: <code>errore lettura</code>';
+            hashEl.innerHTML = 'SHA-256: <code>errore</code>';
         }
     });
 
-    function revokeBlob() {
-        if (currentBlobUrl) {
-            URL.revokeObjectURL(currentBlobUrl);
-            currentBlobUrl = null;
-        }
-    }
-
-    function launchEmulator() {
-        if (emulatorAlreadyStarted) {
+    function launch() {
+        if (started) {
             window.location.reload();
             return;
         }
+        const spec = CORES[consoleSelect.value] || CORES.gb;
+        let url = '';
+        let label = '';
 
-        const chosenConsole = consoleSelect.value;
-        const coreSpec = CONSOLE_CORES[chosenConsole] || CONSOLE_CORES.nes;
-
-        let romUrl = '';
-        let gameLabel = '';
-
-        if (activeSourceType === 'local' && selectedLocalFile) {
-            const dataSource = selectedLocalBytes || selectedLocalFile;
-            const blob = new Blob([dataSource], { type: 'application/octet-stream' });
-            currentBlobUrl = URL.createObjectURL(blob);
-            romUrl = currentBlobUrl;
-            gameLabel = selectedLocalFile.name.replace(/\.[^/.]+$/, '');
-        } else if (activeSourceType === 'catalog' && selectedCatalogItem) {
-            romUrl = selectedCatalogItem.file;
-            gameLabel = selectedCatalogItem.title;
+        if (source === 'local' && localFile) {
+            if (blobUrl) URL.revokeObjectURL(blobUrl);
+            blobUrl = URL.createObjectURL(new Blob([localBytes || localFile], { type: 'application/octet-stream' }));
+            url = blobUrl;
+            label = localFile.name.replace(/\.[^/.]+$/, '');
+        } else if (source === 'catalog' && catalogPick) {
+            url = catalogPick.file;
+            label = catalogPick.title;
         } else {
-            romInfoStatus.innerHTML = '<span class="status-warn">⚠ Scegli una ROM dalla lista oppure carica un file ROM dal tuo dispositivo.</span>';
+            infoEl.innerHTML = '<span class="warn">⚠ Seleziona una ROM dalla lista o carica un file.</span>';
             return;
         }
 
-        emulatorAlreadyStarted = true;
-
+        started = true;
         const gameDiv = document.getElementById('game');
         if (placeholder) placeholder.style.display = 'none';
-        if (gameDiv) gameDiv.style.display = 'block';
+        if (gameDiv) {
+            gameDiv.innerHTML = '';
+            gameDiv.style.display = 'block';
+        }
 
         window.EJS_player = '#game';
-        window.EJS_core = coreSpec.ejsCore;
-        window.EJS_gameName = gameLabel;
-        window.EJS_gameUrl = romUrl;
+        window.EJS_core = spec.core;
+        window.EJS_gameName = label;
+        window.EJS_gameUrl = url;
         window.EJS_pathtodata = CDN_BASE;
         window.EJS_startOnLoaded = true;
         window.EJS_threads = false;
-        window.EJS_virtualGamepadSettings = { enabled: true };
+        window.EJS_language = 'en-US';
+        window.EJS_virtualGamepadSettings = true;
 
-        const loader = document.createElement('script');
-        loader.id = 'emulatorjs-loader';
-        loader.src = `${CDN_BASE}loader.js`;
-        loader.async = true;
-
-        loader.onload = () => {
-            romInfoStatus.innerHTML = `<span class="status-ok">▶ In esecuzione:</span> <strong>${escapeHtml(gameLabel)}</strong> (${coreSpec.label})`;
+        const sc = document.createElement('script');
+        sc.src = `${CDN_BASE}loader.js`;
+        sc.async = true;
+        sc.onload = () => {
+            infoEl.innerHTML = `<span class="ok">▶ In esecuzione:</span> <strong>${esc(label)}</strong> (${spec.label})`;
         };
-
-        loader.onerror = () => {
-            emulatorAlreadyStarted = false;
-            revokeBlob();
-            if (gameDiv) gameDiv.style.display = 'none';
-            if (placeholder) placeholder.style.display = 'block';
-            romInfoStatus.innerHTML = '<span class="status-warn">✖ Errore nel caricamento di EmulatorJS dal CDN.</span>';
+        sc.onerror = () => {
+            started = false;
+            infoEl.innerHTML = '<span class="warn">✖ Errore caricamento emulatore dal CDN.</span>';
         };
-
-        document.body.appendChild(loader);
+        document.body.appendChild(sc);
     }
 
-    if (fullscreenBtn && viewport) {
-        fullscreenBtn.addEventListener('click', () => {
-            if (document.fullscreenElement) {
-                document.exitFullscreen().catch(() => {});
-            } else if (viewport.requestFullscreen) {
-                viewport.requestFullscreen().catch(() => {});
-            }
-        });
-    }
-
-    launchBtn.addEventListener('click', launchEmulator);
-
+    launchBtn.addEventListener('click', launch);
     clearBtn.addEventListener('click', () => {
-        if (emulatorAlreadyStarted) {
+        if (started) {
             window.location.reload();
             return;
         }
-        selectedLocalFile = null;
-        selectedLocalBytes = null;
-        selectedCatalogItem = null;
-        activeSourceType = null;
+        localFile = null;
+        localBytes = null;
+        catalogPick = null;
+        source = null;
         romInput.value = '';
         romListSelect.value = '';
-        if (romFilterInput) romFilterInput.value = '';
-        renderCatalogOptions();
-        revokeBlob();
-        romInfoStatus.textContent = 'Seleziona una ROM dalla lista oppure carica un file ROM dal tuo dispositivo.';
-        romHashStatus.innerHTML = 'SHA-256: <code>---</code>';
+        if (blobUrl) {
+            URL.revokeObjectURL(blobUrl);
+            blobUrl = null;
+        }
+        infoEl.textContent = 'Pronto. Seleziona una ROM o carica un file locale.';
+        hashEl.innerHTML = 'SHA-256: <code>---</code>';
     });
-
-    window.addEventListener('beforeunload', revokeBlob);
-
-    await loadRomCatalog();
+    fsBtn?.addEventListener('click', () => {
+        if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+        else viewport?.requestFullscreen?.().catch(() => {});
+    });
 });
