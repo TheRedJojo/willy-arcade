@@ -1,0 +1,13 @@
+{
+  "updatedAt": "2026-11-25",
+  "note": "Inserisci qui solo ROM homebrew, public domain o distribuibili legittimamente e carica i file corrispondenti in ./assets/roms/",
+  "items": [
+    {
+      "id": "demo-nes-homebrew",
+      "title": "Esempio Homebrew NES (aggiungi file in ./assets/roms/)",
+      "console": "nes",
+      "file": "./assets/roms/esempio_homebrew.nes",
+      "description": "Voce dimostrativa: sostituisci 'file' con il nome reale del tuo file dentro assets/roms/ oppure usa 'Carica ROM dal tuo dispositivo'."
+    }
+  ]
+}

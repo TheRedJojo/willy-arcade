@@ -3,20 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RetroLab Arcade | Portale Giochi HTML5 &amp; Emulatore</title>
+  <title>RetroLab Arcade | Giochi HTML5 &amp; Emulatore Retro</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 <body>
-<div class="crt-overlay" aria-hidden="true"></div>
-
 <header class="site-header">
   <div class="container header-content">
     <a href="./index.html" class="brand">
-      <span class="brand-icon">👾</span>
-      <span class="brand-text">RetroLab <span class="neon-cyan">Arcade</span></span>
+      <span class="brand-mark" aria-hidden="true">🕹️</span>
+      <span>RetroLab <span class="text-cyan">Arcade</span></span>
     </a>
     <nav class="main-nav" aria-label="Navigazione principale">
       <a href="./index.html" class="nav-link active">Catalogo</a>
@@ -28,65 +26,63 @@
 
 <main class="container main-content">
   <section class="hero-banner">
-    <div class="hero-badge">100% STATIC WEB • HTML5 CANVAS • EMULATORJS</div>
-    <h1 class="hero-title">INSERT COIN TO <span class="neon-pink">PLAY</span></h1>
+    <div class="hero-badge">Static Web • HTML5 Canvas • EmulatorJS</div>
+    <h1 class="hero-title">RETROLAB <span class="text-cyan">ARCADE</span></h1>
     <p class="hero-subtitle">
-      Esplora mini-giochi originali sviluppati in JavaScript Vanilla oppure carica le tue ROM homebrew NES, SNES e Game Boy direttamente nel browser.
+      Gioca subito ai mini-giochi originali in HTML5 Canvas o avvia i titoli della lista ROM e i tuoi file locali su browser — desktop e mobile.
     </p>
     <div class="hero-actions">
       <a href="./play_original.html" class="btn btn-primary">Gioca a Space Defender</a>
-      <a href="./play_retro.html" class="btn btn-secondary">Apri Emulatore Retro</a>
+      <a href="./play_retro.html" class="btn btn-secondary">Apri Retro Emulator</a>
     </div>
   </section>
 
   <section class="catalog-section" aria-labelledby="original-games-heading">
     <div class="section-header">
       <h2 id="original-games-heading" class="section-title">
-        <span class="neon-cyan">//</span> Giochi Originali (HTML5 Canvas)
+        <span class="text-cyan">//</span> Giochi Originali
       </h2>
-      <span class="section-tag">JS Vanilla ES6+</span>
+      <span class="section-tag">Tastiera + Pad Mobile</span>
     </div>
 
     <div class="games-grid">
       <article class="game-card">
         <div class="card-banner banner-space">
           <span class="card-badge">ORIGINALE</span>
-          <div class="pixel-art-preview">🚀 🛸 💥</div>
+          <div class="pixel-art-preview">🚀 🛸</div>
         </div>
         <div class="card-body">
           <h3 class="card-title">Space Defender</h3>
           <p class="card-desc">
-            Difendi il settore dallo sciame alieno. Spara, schiva le ondate nemiche e scala la classifica locale.
+            Difendi il settore dalle ondate aliene con fuoco rapido, scudi temporanei e velocità progressiva.
           </p>
           <div class="card-meta">
-            <span>Comandi: Frecce / A-D + Spazio</span>
+            <span>Frecce / A-D / Pad • Spazio</span>
             <span id="card-space-best" class="meta-record">Record: 0</span>
           </div>
           <div class="card-actions">
             <a href="./play_original.html" class="btn btn-primary btn-full">Avvia Gioco</a>
-            <button type="button" class="btn btn-icon fav-toggle" data-game-id="space_defender" aria-label="Aggiungi Space Defender ai preferiti" title="Preferito">
-              ☆
-            </button>
+            <button type="button" class="btn btn-icon fav-toggle" data-game-id="space_defender" aria-label="Preferito Space Defender">☆</button>
           </div>
         </div>
       </article>
 
       <article class="game-card card-coming-soon">
         <div class="card-banner banner-locked">
-          <span class="card-badge badge-muted">PROSSIMAMENTE</span>
-          <div class="pixel-art-preview">🧱 🏓 ⚡</div>
+          <span class="card-badge badge-muted">SLOT PRONTO</span>
+          <div class="pixel-art-preview">🧱 ⚡</div>
         </div>
         <div class="card-body">
-          <h3 class="card-title">Neon Breakout</h3>
+          <h3 class="card-title">Nuovo Gioco Canvas</h3>
           <p class="card-desc">
-            Slot predisposto per il tuo prossimo mini-gioco Canvas. Architettura modulare pronta per nuove cartucce JS.
+            Spazio predisposto per aggiungere un secondo gioco originale in <code>./assets/js/</code> senza modificare il backend.
           </p>
           <div class="card-meta">
-            <span>Modulo: In sviluppo</span>
-            <span class="meta-record">v1.1</span>
+            <span>Modulo espandibile</span>
+            <span class="meta-record">v1.2</span>
           </div>
           <div class="card-actions">
-            <button type="button" class="btn btn-disabled btn-full" disabled>In Arrivo</button>
+            <button type="button" class="btn btn-disabled btn-full" disabled>In arrivo</button>
           </div>
         </div>
       </article>
@@ -96,65 +92,61 @@
   <section class="catalog-section" aria-labelledby="retro-emulator-heading">
     <div class="section-header">
       <h2 id="retro-emulator-heading" class="section-title">
-        <span class="neon-pink">//</span> Retro Emulator (WebAssembly)
+        <span class="text-pink">//</span> Console Retro Supportate
       </h2>
-      <span class="section-tag">NES • SNES • GB / GBC</span>
+      <span class="section-tag">Lista ROM + File Utente</span>
     </div>
 
     <div class="games-grid">
       <article class="game-card">
-        <div class="card-banner banner-nes">
-          <span class="card-badge badge-pink">8-BIT</span>
-          <div class="pixel-art-preview">🎮 NES</div>
+        <div class="card-banner banner-console">
+          <span class="card-badge badge-pink">8-BIT &amp; 16-BIT</span>
+          <div class="pixel-art-preview">NES • SNES</div>
         </div>
         <div class="card-body">
-          <h3 class="card-title">Nintendo Entertainment System</h3>
+          <h3 class="card-title">Nintendo Classic (NES / SNES)</h3>
           <p class="card-desc">
-            Avvia file <code>.nes</code> locali o test homebrew direttamente nel browser con supporto gamepad e salvataggi.
+            Scegli dalla tua lista in <code>./assets/roms/</code> o carica file <code>.nes</code>, <code>.sfc</code>, <code>.smc</code>.
           </p>
           <div class="card-actions">
-            <a href="./play_retro.html?core=nes" class="btn btn-secondary btn-full">Carica ROM NES</a>
-            <button type="button" class="btn btn-icon fav-toggle" data-game-id="emu_nes" aria-label="Aggiungi NES ai preferiti" title="Preferito">
-              ☆
-            </button>
+            <a href="./play_retro.html?console=nes" class="btn btn-outline btn-full">NES</a>
+            <a href="./play_retro.html?console=snes" class="btn btn-outline btn-full">SNES</a>
+            <button type="button" class="btn btn-icon fav-toggle" data-game-id="emu_nintendo" aria-label="Preferito Nintendo">☆</button>
           </div>
         </div>
       </article>
 
       <article class="game-card">
-        <div class="card-banner banner-snes">
-          <span class="card-badge badge-pink">16-BIT</span>
-          <div class="pixel-art-preview">🕹️ SNES</div>
-        </div>
-        <div class="card-body">
-          <h3 class="card-title">Super Nintendo (SNES)</h3>
-          <p class="card-desc">
-            Emulazione fluida a 60fps per file <code>.sfc</code> e <code>.smc</code> tramite core WebAssembly su client.
-          </p>
-          <div class="card-actions">
-            <a href="./play_retro.html?core=snes" class="btn btn-secondary btn-full">Carica ROM SNES</a>
-            <button type="button" class="btn btn-icon fav-toggle" data-game-id="emu_snes" aria-label="Aggiungi SNES ai preferiti" title="Preferito">
-              ☆
-            </button>
-          </div>
-        </div>
-      </article>
-
-      <article class="game-card">
-        <div class="card-banner banner-gb">
+        <div class="card-banner banner-console">
           <span class="card-badge badge-pink">PORTABLE</span>
-          <div class="pixel-art-preview">📟 GB / GBC</div>
+          <div class="pixel-art-preview">GB • GBA</div>
         </div>
         <div class="card-body">
-          <h3 class="card-title">Game Boy &amp; Game Boy Color</h3>
+          <h3 class="card-title">Game Boy &amp; Game Boy Advance</h3>
           <p class="card-desc">
-            Riproduci titoli homebrew <code>.gb</code> e <code>.gbc</code> con palette classica e controlli touch/tastiera.
+            Supporto completo per cartucce <code>.gb</code>, <code>.gbc</code> e <code>.gba</code> con controlli touch su mobile.
           </p>
           <div class="card-actions">
-            <a href="./play_retro.html?core=gb" class="btn btn-secondary btn-full">Carica ROM GB</a>
-            <button type="button" class="btn btn-icon fav-toggle" data-game-id="emu_gb" aria-label="Aggiungi Game Boy ai preferiti" title="Preferito">
-              ☆
-            </button>
+            <a href="./play_retro.html?console=gb" class="btn btn-outline btn-full">GB/GBC</a>
+            <a href="./play_retro.html?console=gba" class="btn btn-outline btn-full">GBA</a>
+            <button type="button" class="btn btn-icon fav-toggle" data-game-id="emu_gameboy" aria-label="Preferito Game Boy">☆</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="game-card">
+        <div class="card-banner banner-console">
+          <span class="card-badge badge-pink">32/64-BIT &amp; SEGA</span>
+          <div class="pixel-art-preview">MD • N64 • PSX</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">Mega Drive, N64 &amp; PlayStation</h3>
+          <p class="card-desc">
+            Avvia titoli per <code>.md</code>/<code>.bin</code>, <code>.z64</code>/<code>.n64</code> e <code>.chd</code>/<code>.cue</code>/<code>.iso</code>.
+          </p>
+          <div class="card-actions">
+            <a href="./play_retro.html?console=segaMD" class="btn btn-secondary btn-full">Apri Console</a>
+            <button type="button" class="btn btn-icon fav-toggle" data-game-id="emu_advanced" aria-label="Preferito Console Avanzate">☆</button>
           </div>
         </div>
       </article>
@@ -164,9 +156,9 @@
   <section class="scoreboard-section" aria-labelledby="scoreboard-heading">
     <div class="section-header">
       <h2 id="scoreboard-heading" class="section-title">
-        <span class="neon-green">//</span> Hall of Fame Locale &amp; Integrità Dati
+        <span class="text-green">//</span> Record Locali &amp; Integrità
       </h2>
-      <span class="section-tag">localStorage + Web Crypto SHA-256</span>
+      <span class="section-tag">localStorage + SHA-256</span>
     </div>
 
     <div class="panel">
@@ -174,32 +166,26 @@
         <table class="arcade-table">
           <thead>
           <tr>
-            <th>Pos</th>
+            <th>#</th>
             <th>Gioco</th>
             <th>Punteggio</th>
             <th>Data</th>
-            <th>Digest SHA-256 (Parziale)</th>
+            <th>Digest SHA-256</th>
           </tr>
           </thead>
           <tbody id="scoreboard-body">
           <tr>
-            <td colspan="5" class="empty-state">Nessun record registrato. Gioca una partita per salvare il tuo punteggio!</td>
+            <td colspan="5" class="empty-state">Nessun record salvato. Gioca a Space Defender per iniziare!</td>
           </tr>
           </tbody>
         </table>
       </div>
 
       <div class="storage-controls">
-        <div class="crypto-status" id="crypto-status">
-          Stato integrità salvataggi: in attesa di verifica...
-        </div>
+        <div class="crypto-status" id="crypto-status">Verifica integrità salvataggi...</div>
         <div class="storage-buttons">
-          <button type="button" id="btn-export-data" class="btn btn-outline">
-            Esporta Salvataggi (JSON + SHA-256)
-          </button>
-          <button type="button" id="btn-reset-data" class="btn btn-danger">
-            Azzera Dati Locali
-          </button>
+          <button type="button" id="btn-export-data" class="btn btn-outline btn-sm">Esporta JSON + SHA-256</button>
+          <button type="button" id="btn-reset-data" class="btn btn-danger btn-sm">Azzera Dati</button>
         </div>
       </div>
     </div>
@@ -208,8 +194,8 @@
 
 <footer class="site-footer">
   <div class="container footer-content">
-    <p>RetroLab Arcade &copy; 2026 — Progetto Static Web compatibile con GitHub Pages.</p>
-    <p class="footer-note">Nessun dato viene inviato a server esterni: punteggi e ROM restano esclusivamente nel tuo browser.</p>
+    <p>RetroLab Arcade — 100% Static Web per GitHub Pages.</p>
+    <p class="footer-note">I file caricati dall'utente restano nel browser locale; nessun backend coinvolto.</p>
   </div>
 </footer>
 
@@ -224,31 +210,23 @@
       const tbody = document.getElementById('scoreboard-body');
       const cardBestEl = document.getElementById('card-space-best');
 
-      if (state.isValid) {
-        statusEl.innerHTML = `<span class="status-ok">✔ Integrità verificata (SHA-256: ${state.digest.slice(0, 16)}...)</span>`;
-      } else {
-        statusEl.innerHTML = `<span class="status-warn">⚠ Dati locali inizializzati o modificati manualmente</span>`;
-      }
+      statusEl.innerHTML = state.isValid
+              ? `<span class="status-ok">✔ Integrità verificata</span> (SHA-256: <code>${state.digest.slice(0, 14)}...</code>)`
+              : `<span class="status-warn">⚠ Stato inizializzato o modificato</span> (SHA-256: <code>${state.digest.slice(0, 14)}...</code>)`;
 
       const spaceScores = state.data.scores.filter(s => s.gameId === 'space_defender');
       const bestSpace = spaceScores.length > 0 ? Math.max(...spaceScores.map(s => s.score)) : 0;
-      if (cardBestEl) {
-        cardBestEl.textContent = `Record: ${bestSpace}`;
-      }
+      if (cardBestEl) cardBestEl.textContent = `Record: ${bestSpace.toLocaleString('it-IT')}`;
 
       document.querySelectorAll('.fav-toggle').forEach(btn => {
-        const gameId = btn.dataset.gameId;
-        const isFav = state.data.favorites.includes(gameId);
+        const isFav = state.data.favorites.includes(btn.dataset.gameId);
         btn.textContent = isFav ? '★' : '☆';
         btn.classList.toggle('is-favorite', isFav);
       });
 
-      const sortedScores = [...state.data.scores]
-              .sort((a, b) => b.score - a.score)
-              .slice(0, 10);
-
+      const sortedScores = [...state.data.scores].sort((a, b) => b.score - a.score).slice(0, 10);
       if (sortedScores.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Nessun record registrato. Gioca una partita per salvare il tuo punteggio!</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Nessun record salvato. Gioca a Space Defender per iniziare!</td></tr>`;
       } else {
         tbody.innerHTML = sortedScores.map((entry, idx) => `
                         <tr>
@@ -281,7 +259,7 @@
     });
 
     document.getElementById('btn-reset-data').addEventListener('click', async () => {
-      if (confirm('Vuoi davvero cancellare tutti i record e i preferiti salvati in questo browser?')) {
+      if (confirm('Vuoi davvero cancellare tutti i record locali e i preferiti?')) {
         await RetroStorage.resetAll();
         await renderDashboard();
       }

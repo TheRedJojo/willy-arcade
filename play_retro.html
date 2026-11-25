@@ -10,13 +10,11 @@
     <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 <body>
-<div class="crt-overlay" aria-hidden="true"></div>
-
 <header class="site-header">
     <div class="container header-content">
         <a href="./index.html" class="brand">
-            <span class="brand-icon">👾</span>
-            <span class="brand-text">RetroLab <span class="neon-cyan">Arcade</span></span>
+            <span class="brand-mark" aria-hidden="true">🕹️</span>
+            <span>RetroLab <span class="text-cyan">Arcade</span></span>
         </a>
         <nav class="main-nav" aria-label="Navigazione principale">
             <a href="./index.html" class="nav-link">Catalogo</a>
@@ -30,52 +28,62 @@
     <section class="catalog-section">
         <div class="section-header">
             <h1 class="section-title">
-                <span class="neon-pink">//</span> Browser Retro Emulator (EmulatorJS)
+                <span class="text-pink">//</span> Retro Emulator (Lista ROM + Caricamento Locale)
             </h1>
-            <span class="section-tag">100% Client-Side WebAssembly</span>
+            <span class="section-tag">Desktop &amp; Mobile</span>
         </div>
 
         <div class="emulator-toolbar">
             <div class="form-group">
-                <label for="core-select" class="form-label">Sistema / Core</label>
-                <select id="core-select" class="form-select">
-                    <option value="nes">Nintendo Entertainment System (NES - fceumm)</option>
-                    <option value="snes">Super Nintendo (SNES - snes9x)</option>
-                    <option value="gb">Game Boy / Color (GB/GBC - gambatte)</option>
+                <label for="console-select" class="form-label">1. Console</label>
+                <select id="console-select" class="form-select">
+                    <option value="nes">NES (Nintendo Entertainment System)</option>
+                    <option value="snes">SNES (Super Nintendo)</option>
+                    <option value="gb">Game Boy / Game Boy Color</option>
+                    <option value="gba">Game Boy Advance</option>
+                    <option value="segaMD">Sega Mega Drive / Genesis</option>
+                    <option value="n64">Nintendo 64</option>
+                    <option value="psx">Sony PlayStation (PS1)</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="rom-file-input" class="form-label">Seleziona file ROM locale (.nes, .sfc, .smc, .gb, .gbc)</label>
-                <input type="file" id="rom-file-input" class="form-file" accept=".nes,.sfc,.smc,.gb,.gbc,.zip">
+                <label for="rom-list-select" class="form-label">2. Scegli dalla Lista del Sito (./assets/roms/)</label>
+                <select id="rom-list-select" class="form-select">
+                    <option value="">— Caricamento lista ROM... —</option>
+                </select>
             </div>
 
             <div class="form-group">
-                <span class="form-label">Controlli &amp; Azioni</span>
+                <label for="rom-file-input" class="form-label">3. Oppure carica una ROM dal tuo dispositivo</label>
+                <input type="file" id="rom-file-input" class="form-file" accept=".nes,.sfc,.smc,.gb,.gbc,.gba,.md,.gen,.bin,.z64,.n64,.v64,.chd,.cue,.iso,.pbp,.zip">
+            </div>
+
+            <div class="form-group">
+                <span class="form-label">4. Avvio</span>
                 <div class="storage-buttons">
-                    <button type="button" id="btn-launch-rom" class="btn btn-secondary btn-full">Avvia ROM</button>
-                    <button type="button" id="btn-clear-emu" class="btn btn-outline">Reset Box</button>
+                    <button type="button" id="btn-launch-rom" class="btn btn-secondary btn-full">Avvia Emulatore</button>
+                    <button type="button" id="btn-clear-emu" class="btn btn-outline">Reset</button>
                 </div>
             </div>
         </div>
 
-        <div class="panel" style="margin-bottom: 1.25rem;">
+        <div class="panel" style="margin-bottom: 1.15rem;">
             <div class="storage-controls" style="margin-top: 0; padding-top: 0; border-top: none;">
                 <div id="rom-info-status" class="crypto-status">
-                    Nessuna ROM caricata. Seleziona un file ROM o homebrew dal tuo dispositivo (elaborazione 100% locale).
+                    Seleziona un gioco dalla lista oppure carica un file ROM dal tuo dispositivo.
                 </div>
                 <div id="rom-hash-status" class="crypto-status">
-                    SHA-256 ROM: <code>---</code>
+                    SHA-256: <code>---</code>
                 </div>
             </div>
         </div>
 
         <div id="emulator-viewport" class="emulator-viewport" aria-live="polite">
             <div id="emulator-placeholder" class="emulator-placeholder">
-                <h3>Pronto per l'Emulazione</h3>
+                <h3>Emulatore Locale Pronto</h3>
                 <p>
-                    Scegli il sistema (<strong>NES</strong>, <strong>SNES</strong> o <strong>GB/GBC</strong>), seleziona un file ROM locale e clicca su <strong>Avvia ROM</strong>.
-                    I file non vengono mai caricati su alcun server.
+                    Ogni utente esegue l'emulatore nel proprio browser. Puoi usare i giochi elencati in <code>./assets/roms/roms_catalog.json</code> oppure selezionare un file locale (anche su smartphone/tablet con pad touch integrato).
                 </p>
             </div>
             <div id="game" style="width: 100%; height: 100%; display: none;"></div>
@@ -85,8 +93,8 @@
 
 <footer class="site-footer">
     <div class="container footer-content">
-        <p>RetroLab Arcade — Emulazione WebAssembly tramite EmulatorJS.</p>
-        <p class="footer-note">Usa solo ROM di tua proprietà o homebrew/public domain nel rispetto delle normative sul copyright.</p>
+        <p>RetroLab Arcade — EmulatorJS lato browser.</p>
+        <p class="footer-note">Includi in ./assets/roms/ solo ROM homebrew o distribuibili legittimamente.</p>
     </div>
 </footer>
 

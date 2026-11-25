@@ -1,5 +1,5 @@
 /**
- * Space Defender - Mini-gioco arcade completo in HTML5 Canvas + JS Vanilla
+ * Space Defender - Gioco originale HTML5 Canvas con controlli tastiera + pad virtuale mobile/desktop
  */
 document.addEventListener('DOMContentLoaded', async () => {
     const canvas = document.getElementById('game-canvas');
@@ -16,13 +16,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const GAME_ID = 'space_defender';
     const GAME_NAME = 'Space Defender';
 
-    // Sintetizzatore retro leggero con Web Audio API (nessun asset audio esterno necessario)
     let audioCtx = null;
-    function playTone(freq, type = 'square', duration = 0.08, volume = 0.06) {
+    function playTone(freq, type = 'square', duration = 0.08, volume = 0.05) {
         try {
             if (!audioCtx) {
-                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-                if (AudioContextClass) audioCtx = new AudioContextClass();
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtx) audioCtx = new AudioCtx();
             }
             if (!audioCtx) return;
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -39,11 +38,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             osc.start();
             osc.stop(audioCtx.currentTime + duration);
         } catch (_) {
-            // Ignora blocchi autoplay se l'utente non ha ancora interagito
+            // Ignora eventuali blocchi audio del browser
         }
     }
 
-    // Stato di gioco
     const keys = { left: false, right: false, fire: false };
     let state = 'START'; // 'START' | 'PLAYING' | 'PAUSED' | 'GAMEOVER'
     let score = 0;
@@ -54,15 +52,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     let shootCooldown = 0;
     let enemyShootTimer = 0;
     let enemyDirection = 1;
-    let enemySpeed = 55;
+    let enemySpeed = 58;
     let scoreSavedForRun = false;
 
     const player = {
-        width: 46,
+        width: 48,
         height: 26,
-        x: canvas.width / 2 - 23,
-        y: canvas.height - 52,
-        speed: 380,
+        x: canvas.width / 2 - 24,
+        y: canvas.height - 50,
+        speed: 420,
         invulnerableTimer: 0
     };
 
@@ -70,28 +68,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     let enemyBullets = [];
     let enemies = [];
     let particles = [];
-    const stars = Array.from({ length: 75 }, () => ({
+    const stars = Array.from({ length: 70 }, () => ({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         size: Math.random() * 2 + 1,
-        speed: Math.random() * 45 + 15
+        speed: Math.random() * 45 + 16
     }));
 
     function updateHUD() {
         hudScore.textContent = score.toLocaleString('it-IT');
         hudBest.textContent = bestScore.toLocaleString('it-IT');
         hudWave.textContent = wave;
-        hudLives.textContent = '♥'.repeat(Math.max(0, lives)) || '0';
+        hudLives.textContent = lives > 0 ? '♥'.repeat(lives) : '0';
     }
 
     function spawnWave(waveNumber) {
         enemies = [];
         const rows = Math.min(5, 3 + Math.floor((waveNumber - 1) / 2));
         const cols = Math.min(10, 7 + Math.floor(waveNumber / 2));
-        const spacingX = 62;
-        const spacingY = 44;
+        const spacingX = 64;
+        const spacingY = 42;
         const startX = (canvas.width - (cols - 1) * spacingX) / 2;
-        const startY = 65;
+        const startY = 62;
 
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
@@ -106,20 +104,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
         enemyDirection = 1;
-        enemySpeed = 55 + waveNumber * 14;
+        enemySpeed = 58 + waveNumber * 14;
     }
 
     function createExplosion(x, y, color, count = 16) {
         for (let i = 0; i < count; i++) {
             const angle = Math.random() * Math.PI * 2;
-            const speed = Math.random() * 160 + 40;
+            const speed = Math.random() * 170 + 40;
             particles.push({
                 x,
                 y,
                 vx: Math.cos(angle) * speed,
                 vy: Math.sin(angle) * speed,
-                life: Math.random() * 0.45 + 0.2,
-                maxLife: 0.65,
+                life: Math.random() * 0.4 + 0.2,
+                maxLife: 0.6,
                 color
             });
         }
@@ -137,24 +135,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         particles = [];
         spawnWave(wave);
         state = 'PLAYING';
-        saveStatusEl.innerHTML = 'Partita in corso — Distruggi la flotta aliena!';
+        saveStatusEl.innerHTML = 'In gioco — Difendi il settore e fai record!';
         updateHUD();
-        playTone(520, 'square', 0.12);
+        playTone(540, 'square', 0.12);
+    }
+
+    function togglePause() {
+        if (state === 'PLAYING') {
+            state = 'PAUSED';
+            saveStatusEl.innerHTML = 'Gioco in <strong>PAUSA</strong> — Premi P o ⏸ per riprendere.';
+        } else if (state === 'PAUSED') {
+            state = 'PLAYING';
+            lastTime = performance.now();
+            saveStatusEl.innerHTML = 'In gioco — Difendi il settore e fai record!';
+        }
     }
 
     async function triggerGameOver() {
         if (state === 'GAMEOVER') return;
         state = 'GAMEOVER';
-        playTone(140, 'sawtooth', 0.45, 0.09);
+        playTone(140, 'sawtooth', 0.42, 0.08);
 
         if (!scoreSavedForRun && typeof RetroStorage !== 'undefined' && score > 0) {
             scoreSavedForRun = true;
             const saved = await RetroStorage.recordScore(GAME_ID, GAME_NAME, score);
             bestScore = saved.bestScore;
             updateHUD();
-            saveStatusEl.innerHTML = `<span class="status-ok">✔ Punteggio ${score} salvato! SHA-256: ${saved.entry.hash.slice(0, 14)}...</span>`;
+            saveStatusEl.innerHTML = `<span class="status-ok">✔ Salvato in classifica: ${score.toLocaleString('it-IT')} pt</span> (SHA-256: <code>${saved.entry.hash.slice(0, 12)}...</code>)`;
         } else {
-            saveStatusEl.innerHTML = 'Game Over! Premi <strong>Spazio</strong> o <strong>Nuova Partita</strong> per riprovare.';
+            saveStatusEl.innerHTML = 'Game Over — Premi <strong>Spazio</strong>, <strong>R</strong> o <strong>Nuova Partita</strong>.';
         }
     }
 
@@ -168,7 +177,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function update(dt) {
-        // Stelle di sfondo sempre animate
         for (const s of stars) {
             s.y += s.speed * dt;
             if (s.y > canvas.height) {
@@ -177,7 +185,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
-        // Particelle
         for (let i = particles.length - 1; i >= 0; i--) {
             const p = particles[i];
             p.x += p.vx * dt;
@@ -188,7 +195,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (state !== 'PLAYING') return;
 
-        // Movimento giocatore
         if (keys.left) player.x -= player.speed * dt;
         if (keys.right) player.x += player.speed * dt;
         player.x = Math.max(16, Math.min(canvas.width - player.width - 16, player.x));
@@ -197,7 +203,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             player.invulnerableTimer -= dt;
         }
 
-        // Sparo giocatore
         shootCooldown -= dt;
         if (keys.fire && shootCooldown <= 0) {
             playerBullets.push({
@@ -205,13 +210,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 y: player.y - 10,
                 width: 4,
                 height: 14,
-                speed: 560
+                speed: 580
             });
-            shootCooldown = 0.24;
-            playTone(760, 'square', 0.06, 0.04);
+            shootCooldown = 0.22;
+            playTone(780, 'square', 0.06, 0.035);
         }
 
-        // Aggiornamento proiettili giocatore
         for (let i = playerBullets.length - 1; i >= 0; i--) {
             const b = playerBullets[i];
             b.y -= b.speed * dt;
@@ -220,7 +224,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 continue;
             }
 
-            // Collisione con nemici
             for (let j = enemies.length - 1; j >= 0; j--) {
                 const e = enemies[j];
                 if (rectsOverlap(b, e)) {
@@ -229,14 +232,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     score += e.points;
                     if (score > bestScore) bestScore = score;
                     updateHUD();
-                    createExplosion(e.x + e.width / 2, e.y + e.height / 2, '#00f3ff', 14);
-                    playTone(280, 'triangle', 0.09, 0.07);
+                    createExplosion(e.x + e.width / 2, e.y + e.height / 2, '#38bdf8', 14);
+                    playTone(290, 'triangle', 0.08, 0.06);
                     break;
                 }
             }
         }
 
-        // Movimento sciame nemico
         let hitEdge = false;
         const speedBoost = 1 + (1 - Math.min(enemies.length, 35) / 35) * 0.9;
         for (const e of enemies) {
@@ -259,7 +261,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
-        // Sparo nemico
         enemyShootTimer -= dt;
         if (enemyShootTimer <= 0 && enemies.length > 0) {
             const shooter = enemies[Math.floor(Math.random() * enemies.length)];
@@ -268,12 +269,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 y: shooter.y + shooter.height,
                 width: 6,
                 height: 14,
-                speed: 250 + wave * 22
+                speed: 255 + wave * 20
             });
-            enemyShootTimer = Math.max(0.45, 1.35 - wave * 0.1);
+            enemyShootTimer = Math.max(0.45, 1.3 - wave * 0.1);
         }
 
-        // Aggiornamento proiettili nemici
         for (let i = enemyBullets.length - 1; i >= 0; i--) {
             const eb = enemyBullets[i];
             eb.y += eb.speed * dt;
@@ -287,8 +287,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 lives -= 1;
                 player.invulnerableTimer = 1.6;
                 updateHUD();
-                createExplosion(player.x + player.width / 2, player.y + player.height / 2, '#ff2a85', 22);
-                playTone(120, 'sawtooth', 0.25, 0.08);
+                createExplosion(player.x + player.width / 2, player.y + player.height / 2, '#f472b6', 22);
+                playTone(125, 'sawtooth', 0.24, 0.07);
 
                 if (lives <= 0) {
                     triggerGameOver();
@@ -297,14 +297,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
-        // Ondata completata
         if (enemies.length === 0) {
             wave += 1;
             score += 500;
             if (score > bestScore) bestScore = score;
             updateHUD();
             spawnWave(wave);
-            playTone(660, 'sine', 0.2, 0.07);
+            playTone(660, 'sine', 0.2, 0.06);
         }
     }
 
@@ -313,11 +312,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
         ctx.save();
-        ctx.fillStyle = '#00f3ff';
-        ctx.shadowColor = '#00f3ff';
-        ctx.shadowBlur = 12;
-
-        // Scafo principale navicella pixel-style
+        ctx.fillStyle = '#38bdf8';
         ctx.beginPath();
         ctx.moveTo(player.x + player.width / 2, player.y);
         ctx.lineTo(player.x + player.width, player.y + player.height);
@@ -327,62 +322,52 @@ document.addEventListener('DOMContentLoaded', async () => {
         ctx.closePath();
         ctx.fill();
 
-        // Cabina centrale
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = '#f8fafc';
         ctx.fillRect(player.x + player.width / 2 - 4, player.y + 10, 8, 8);
         ctx.restore();
     }
 
     function drawEnemies() {
-        const rowColors = ['#ff2a85', '#facc15', '#00ff88', '#38bdf8', '#c084fc'];
+        const rowColors = ['#f472b6', '#fbbf24', '#34d399', '#38bdf8', '#c084fc'];
         for (const e of enemies) {
             const color = rowColors[e.row % rowColors.length];
             ctx.save();
             ctx.fillStyle = color;
-            ctx.shadowColor = color;
-            ctx.shadowBlur = 8;
-
-            // Corpo alieno
             ctx.fillRect(e.x + 6, e.y + 4, e.width - 12, e.height - 8);
             ctx.fillRect(e.x, e.y + 8, e.width, e.height - 14);
-            // Antenne / zampe
             ctx.fillRect(e.x + 4, e.y, 4, 4);
             ctx.fillRect(e.x + e.width - 8, e.y, 4, 4);
             ctx.fillRect(e.x + 4, e.y + e.height - 4, 5, 4);
             ctx.fillRect(e.x + e.width - 9, e.y + e.height - 4, 5, 4);
 
-            // Occhi
-            ctx.fillStyle = '#05060b';
+            ctx.fillStyle = '#060811';
             ctx.fillRect(e.x + 10, e.y + 9, 4, 4);
             ctx.fillRect(e.x + e.width - 14, e.y + 9, 4, 4);
             ctx.restore();
         }
     }
 
-    function drawOverlayMessage(title, subtitle, accent = '#00f3ff') {
+    function drawOverlay(title, subtitle, accent = '#38bdf8') {
         ctx.save();
-        ctx.fillStyle = 'rgba(5, 7, 15, 0.78)';
+        ctx.fillStyle = 'rgba(6, 8, 17, 0.78)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         ctx.textAlign = 'center';
         ctx.fillStyle = accent;
-        ctx.font = '26px "Press Start 2P", monospace';
-        ctx.fillText(title, canvas.width / 2, canvas.height / 2 - 24);
+        ctx.font = '24px "Press Start 2P", monospace';
+        ctx.fillText(title, canvas.width / 2, canvas.height / 2 - 22);
 
-        ctx.fillStyle = '#f1f5f9';
+        ctx.fillStyle = '#f8fafc';
         ctx.font = '15px Inter, sans-serif';
-        ctx.fillText(subtitle, canvas.width / 2, canvas.height / 2 + 24);
+        ctx.fillText(subtitle, canvas.width / 2, canvas.height / 2 + 22);
         ctx.restore();
     }
 
     function render() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Sfondo spazio
-        ctx.fillStyle = '#04050a';
+        ctx.fillStyle = '#060811';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+        ctx.fillStyle = 'rgba(248, 250, 252, 0.72)';
         for (const s of stars) {
             ctx.fillRect(s.x, s.y, s.size, s.size);
         }
@@ -390,19 +375,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         drawPlayer();
         drawEnemies();
 
-        // Proiettili giocatore
-        ctx.fillStyle = '#00ff88';
-        for (const b of playerBullets) {
-            ctx.fillRect(b.x, b.y, b.width, b.height);
-        }
+        ctx.fillStyle = '#34d399';
+        for (const b of playerBullets) ctx.fillRect(b.x, b.y, b.width, b.height);
 
-        // Proiettili nemici
-        ctx.fillStyle = '#ff2a85';
-        for (const eb of enemyBullets) {
-            ctx.fillRect(eb.x, eb.y, eb.width, eb.height);
-        }
+        ctx.fillStyle = '#f472b6';
+        for (const eb of enemyBullets) ctx.fillRect(eb.x, eb.y, eb.width, eb.height);
 
-        // Particelle
         for (const p of particles) {
             ctx.save();
             ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
@@ -412,11 +390,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         if (state === 'START') {
-            drawOverlayMessage('SPACE DEFENDER', 'Premi SPAZIO o clicca "Nuova Partita" per iniziare', '#00f3ff');
+            drawOverlay('SPACE DEFENDER', 'Premi SPAZIO, FUOCO o "Nuova Partita" per iniziare', '#38bdf8');
         } else if (state === 'PAUSED') {
-            drawOverlayMessage('PAUSA', 'Premi P per riprendere la partita', '#facc15');
+            drawOverlay('PAUSA', 'Premi P o ⏸ per riprendere', '#fbbf24');
         } else if (state === 'GAMEOVER') {
-            drawOverlayMessage('GAME OVER', `Punteggio finale: ${score} — Premi SPAZIO per rigiocare`, '#ff2a85');
+            drawOverlay('GAME OVER', `Punteggio: ${score} — Premi SPAZIO o R per rigiocare`, '#f472b6');
         }
     }
 
@@ -430,52 +408,68 @@ document.addEventListener('DOMContentLoaded', async () => {
         requestAnimationFrame(gameLoop);
     }
 
-    // Eventi tastiera
     window.addEventListener('keydown', (e) => {
         if (['ArrowLeft', 'ArrowRight', 'Space', ' '].includes(e.key)) {
             e.preventDefault();
         }
-
         if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = true;
         if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = true;
-        if (e.key === ' ' || e.code === 'Space') {
+        if (e.key === ' ' || e.code === 'Space' || e.key === 'z' || e.key === 'Z' || e.key === 'j' || e.key === 'J') {
             keys.fire = true;
-            if (state === 'START' || state === 'GAMEOVER') {
-                startNewGame();
-            }
+            if (state === 'START' || state === 'GAMEOVER') startNewGame();
         }
-        if ((e.key === 'p' || e.key === 'P') && (state === 'PLAYING' || state === 'PAUSED')) {
-            state = state === 'PLAYING' ? 'PAUSED' : 'PLAYING';
+        if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') {
+            togglePause();
+        }
+        if (e.key === 'r' || e.key === 'R') {
+            startNewGame();
         }
     });
 
     window.addEventListener('keyup', (e) => {
         if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = false;
         if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = false;
-        if (e.key === ' ' || e.code === 'Space') keys.fire = false;
+        if (e.key === ' ' || e.code === 'Space' || e.key === 'z' || e.key === 'Z' || e.key === 'j' || e.key === 'J') {
+            keys.fire = false;
+        }
     });
 
-    // Eventi Touch Mobile
-    const bindHoldButton = (id, keyName) => {
+    const bindHoldPad = (id, keyName) => {
         const el = document.getElementById(id);
         if (!el) return;
-        const setPressed = (val) => (e) => {
+        const press = (isDown) => (e) => {
             e.preventDefault();
-            keys[keyName] = val;
-            if (val && keyName === 'fire' && (state === 'START' || state === 'GAMEOVER')) {
+            keys[keyName] = isDown;
+            el.classList.toggle('is-pressed', isDown);
+            if (isDown && keyName === 'fire' && (state === 'START' || state === 'GAMEOVER')) {
                 startNewGame();
             }
         };
-        el.addEventListener('touchstart', setPressed(true), { passive: false });
-        el.addEventListener('touchend', setPressed(false));
-        el.addEventListener('mousedown', setPressed(true));
-        el.addEventListener('mouseup', setPressed(false));
-        el.addEventListener('mouseleave', setPressed(false));
+        el.addEventListener('pointerdown', press(true));
+        el.addEventListener('pointerup', press(false));
+        el.addEventListener('pointerleave', press(false));
+        el.addEventListener('pointercancel', press(false));
     };
 
-    bindHoldButton('touch-left', 'left');
-    bindHoldButton('touch-right', 'right');
-    bindHoldButton('touch-fire', 'fire');
+    bindHoldPad('pad-left', 'left');
+    bindHoldPad('pad-right', 'right');
+    bindHoldPad('pad-fire', 'fire');
+
+    const pauseBtn = document.getElementById('pad-pause');
+    if (pauseBtn) {
+        pauseBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            togglePause();
+        });
+    }
+
+    // Trascinamento orizzontale diretto sul canvas per mobile/tablet
+    canvas.addEventListener('pointermove', (e) => {
+        if (state !== 'PLAYING' || e.pointerType === 'mouse') return;
+        const rect = canvas.getBoundingClientRect();
+        const relX = ((e.clientX - rect.left) / rect.width) * canvas.width;
+        player.x = Math.max(16, Math.min(canvas.width - player.width - 16, relX - player.width / 2));
+    });
 
     restartBtn.addEventListener('click', startNewGame);
 
