@@ -1,13 +1,118 @@
 {
   "updatedAt": "2026-11-25",
-  "note": "Inserisci qui solo ROM homebrew, public domain o distribuibili legittimamente e carica i file corrispondenti in ./assets/roms/",
+  "note": "Catalogo ROM Game Boy in ./assets/roms/gb/.",
   "items": [
     {
-      "id": "demo-nes-homebrew",
-      "title": "Esempio Homebrew NES (aggiungi file in ./assets/roms/)",
-      "console": "nes",
-      "file": "./assets/roms/esempio_homebrew.nes",
-      "description": "Voce dimostrativa: sostituisci 'file' con il nome reale del tuo file dentro assets/roms/ oppure usa 'Carica ROM dal tuo dispositivo'."
+      "id": "gb-donkey-kong",
+      "title": "Donkey Kong",
+      "console": "gb",
+      "file": "./assets/roms/gb/donkey_kong.gb",
+      "description": "Classico platform/puzzle Game Boy."
+    },
+    {
+      "id": "gb-kirby",
+      "title": "Kirby",
+      "console": "gb",
+      "file": "./assets/roms/gb/kirby.gb",
+      "description": "Avventura platform Game Boy."
+    },
+    {
+      "id": "gb-zelda",
+      "title": "The Legend of Zelda",
+      "console": "gb",
+      "file": "./assets/roms/gb/zelda.gb",
+      "description": "Avventura d'azione e puzzle Game Boy."
+    },
+    {
+      "id": "gb-mario-land-2",
+      "title": "Super Mario Land 2",
+      "console": "gb",
+      "file": "./assets/roms/gb/mario_land_2.gb",
+      "description": "Platform Game Boy con i 6 Golden Coins."
+    },
+    {
+      "id": "gb-mega-man",
+      "title": "Mega Man",
+      "console": "gb",
+      "file": "./assets/roms/gb/mega_man.gb",
+      "description": "Action platformer Game Boy."
+    },
+    {
+      "id": "gb-metroid",
+      "title": "Metroid",
+      "console": "gb",
+      "file": "./assets/roms/gb/metroid.gb",
+      "description": "Esplorazione e azione fantascientifica Game Boy."
+    },
+    {
+      "id": "gb-pokemon-blue",
+      "title": "Pokemon Blue",
+      "console": "gb",
+      "file": "./assets/roms/gb/pokemon_blue.gb",
+      "description": "RPG a turni Game Boy."
+    },
+    {
+      "id": "gb-pokemon-red",
+      "title": "Pokemon Red",
+      "console": "gb",
+      "file": "./assets/roms/gb/pokemon_red.gb",
+      "description": "RPG a turni Game Boy."
+    },
+    {
+      "id": "gb-pokemon-yellow",
+      "title": "Pokemon Yellow",
+      "console": "gb",
+      "file": "./assets/roms/gb/pokemon_yellow.gb",
+      "description": "RPG a turni Game Boy."
+    },
+    {
+      "id": "gb-road-rash",
+      "title": "Road Rash",
+      "console": "gb",
+      "file": "./assets/roms/gb/road_rash.gb",
+      "description": "Corse arcade su moto Game Boy."
+    },
+    {
+      "id": "gb-mario-land",
+      "title": "Super Mario Land",
+      "console": "gb",
+      "file": "./assets/roms/gb/mario_land.gb",
+      "description": "Primo platform di Mario per Game Boy."
+    },
+    {
+      "id": "gb-tennis",
+      "title": "Tennis",
+      "console": "gb",
+      "file": "./assets/roms/gb/tennis.gb",
+      "description": "Classico sportivo Game Boy."
+    },
+    {
+      "id": "gb-tetris",
+      "title": "Tetris",
+      "console": "gb",
+      "file": "./assets/roms/gb/tetris.gb",
+      "description": "Puzzle arcade per eccellenza su Game Boy."
+    },
+    {
+      "id": "gb-wario",
+      "title": "Wario Land",
+      "console": "gb",
+      "file": "./assets/roms/gb/wario.gb",
+      "description": "Platform Game Boy con Wario."
+    },
+    {
+      "id": "gb-wario-2",
+      "title": "Wario Land 2",
+      "console": "gb",
+      "file": "./assets/roms/gb/wario2.gb",
+      "description": "Secondo capitolo Game Boy di Wario."
+    },
+    {
+      "id": "gb-wario-3",
+      "title": "Wario Land 3",
+      "console": "gb",
+      "file": "./assets/roms/gb/wario3.gb",
+      "description": "Terzo capitolo Game Boy di Wario."
     }
   ]
 }

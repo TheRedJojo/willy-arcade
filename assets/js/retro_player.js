@@ -29,9 +29,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let catalogItems = [];
     let selectedLocalFile = null;
+    let selectedLocalBytes = null;
     let selectedCatalogItem = null;
     let activeSourceType = null; // 'catalog' | 'local'
     let currentBlobUrl = null;
+    let emulatorAlreadyStarted = false;
 
     const params = new URLSearchParams(window.location.search);
     const initialConsole = params.get('console') || params.get('core');
@@ -69,24 +71,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         return 'non-disponibile-senza-https-o-localhost';
     }
 
-    function populateCatalogDropdown(filterConsole = '') {
-        const currentValue = romListSelect.value;
-        const filtered = filterConsole
-            ? catalogItems.filter(item => item.console === filterConsole)
-            : catalogItems;
-
+    function populateCatalogDropdown() {
         romListSelect.innerHTML = '<option value="">— Seleziona una ROM dalla lista —</option>';
-
-        for (const item of filtered) {
+        for (const item of catalogItems) {
             const opt = document.createElement('option');
             opt.value = item.id;
             const cLabel = CONSOLE_CORES[item.console]?.label || item.console.toUpperCase();
             opt.textContent = `[${cLabel}] ${item.title}`;
             romListSelect.appendChild(opt);
-        }
-
-        if (filtered.some(item => item.id === currentValue)) {
-            romListSelect.value = currentValue;
         }
     }
 
@@ -116,6 +108,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         selectedCatalogItem = item;
         selectedLocalFile = null;
+        selectedLocalBytes = null;
         romInput.value = '';
         activeSourceType = 'catalog';
 
@@ -153,13 +146,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const sizeKB = (file.size / 1024).toFixed(1);
         romInfoStatus.innerHTML = `<span class="status-ok">✔ File locale:</span> <strong>${escapeHtml(file.name)}</strong> (${sizeKB} KB)`;
-        romHashStatus.innerHTML = 'SHA-256: <code>calcolo...</code>';
+        romHashStatus.innerHTML = 'SHA-256: <code>lettura in memoria...</code>';
 
         try {
-            const buf = await file.arrayBuffer();
-            const hash = await computeBufferSHA256(buf);
+            // Copia i byte completi in un ArrayBuffer dedicato in memoria
+            const rawBuf = await file.arrayBuffer();
+            selectedLocalBytes = rawBuf.slice(0);
+            const hash = await computeBufferSHA256(selectedLocalBytes);
             romHashStatus.innerHTML = `SHA-256: <code title="${hash}">${hash.slice(0, 16)}...</code>`;
         } catch (_) {
+            selectedLocalBytes = null;
             romHashStatus.innerHTML = 'SHA-256: <code>errore lettura</code>';
         }
     });
@@ -171,24 +167,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    function resetViewport() {
-        revokeBlob();
-        const prevScript = document.getElementById('emulatorjs-loader');
-        if (prevScript) prevScript.remove();
-
-        const oldGame = document.getElementById('game');
-        if (oldGame) {
-            const fresh = document.createElement('div');
-            fresh.id = 'game';
-            fresh.style.width = '100%';
-            fresh.style.height = '100%';
-            fresh.style.display = 'none';
-            oldGame.replaceWith(fresh);
-        }
-        if (placeholder) placeholder.style.display = 'block';
-    }
-
     function launchEmulator() {
+        // EmulatorJS dichiara variabili globali nello scope della finestra:
+        // se era già stato avviato in questa pagina, ricarichiamo la pagina pulita.
+        if (emulatorAlreadyStarted) {
+            window.location.reload();
+            return;
+        }
+
         const chosenConsole = consoleSelect.value;
         const coreSpec = CONSOLE_CORES[chosenConsole] || CONSOLE_CORES.nes;
 
@@ -196,10 +182,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         let gameLabel = '';
 
         if (activeSourceType === 'local' && selectedLocalFile) {
-            revokeBlob();
-            // Crea un Blob pulito in memoria evitando problemi con caratteri speciali nel nome file
-            const cleanBlob = new Blob([selectedLocalFile], { type: 'application/octet-stream' });
-            currentBlobUrl = URL.createObjectURL(cleanBlob);
+            const dataSource = selectedLocalBytes || selectedLocalFile;
+            const blob = new Blob([dataSource], { type: 'application/octet-stream' });
+            currentBlobUrl = URL.createObjectURL(blob);
             romUrl = currentBlobUrl;
             gameLabel = selectedLocalFile.name.replace(/\.[^/.]+$/, '');
         } else if (activeSourceType === 'catalog' && selectedCatalogItem) {
@@ -210,11 +195,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        if (window.location.protocol === 'file:') {
-            romInfoStatus.innerHTML = '<span class="status-warn">⚠ Stai aprendo la pagina via file://. Avviala da IntelliJ (localhost) o GitHub Pages per evitare blocchi di rete del browser.</span>';
-        }
+        emulatorAlreadyStarted = true;
 
-        resetViewport();
         const gameDiv = document.getElementById('game');
         if (placeholder) placeholder.style.display = 'none';
         if (gameDiv) gameDiv.style.display = 'block';
@@ -225,8 +207,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.EJS_gameUrl = romUrl;
         window.EJS_pathtodata = CDN_BASE;
         window.EJS_startOnLoaded = true;
-        window.EJS_language = 'it';
-        window.EJS_threads = false; // Evita errori SharedArrayBuffer/CORS su hosting statici come GitHub Pages
+        window.EJS_threads = false;
         window.EJS_virtualGamepadSettings = { enabled: true };
 
         const loader = document.createElement('script');
@@ -239,8 +220,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 
         loader.onerror = () => {
-            resetViewport();
-            romInfoStatus.innerHTML = '<span class="status-warn">✖ Errore nel caricamento del motore EmulatorJS dal CDN (disattiva eventuali AdBlock o verifica la connessione).</span>';
+            emulatorAlreadyStarted = false;
+            revokeBlob();
+            if (gameDiv) gameDiv.style.display = 'none';
+            if (placeholder) placeholder.style.display = 'block';
+            romInfoStatus.innerHTML = '<span class="status-warn">✖ Errore nel caricamento di EmulatorJS dal CDN (verifica connessione o eventuali estensioni bloccanti).</span>';
         };
 
         document.body.appendChild(loader);
@@ -249,12 +233,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     launchBtn.addEventListener('click', launchEmulator);
 
     clearBtn.addEventListener('click', () => {
+        if (emulatorAlreadyStarted) {
+            window.location.reload();
+            return;
+        }
         selectedLocalFile = null;
+        selectedLocalBytes = null;
         selectedCatalogItem = null;
         activeSourceType = null;
         romInput.value = '';
         romListSelect.value = '';
-        resetViewport();
+        revokeBlob();
         romInfoStatus.textContent = 'Seleziona un gioco dalla lista oppure carica un file ROM dal tuo dispositivo.';
         romHashStatus.innerHTML = 'SHA-256: <code>---</code>';
     });
