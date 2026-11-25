@@ -197,7 +197,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (activeSourceType === 'local' && selectedLocalFile) {
             revokeBlob();
-            currentBlobUrl = URL.createObjectURL(selectedLocalFile);
+            // Crea un Blob pulito in memoria evitando problemi con caratteri speciali nel nome file
+            const cleanBlob = new Blob([selectedLocalFile], { type: 'application/octet-stream' });
+            currentBlobUrl = URL.createObjectURL(cleanBlob);
             romUrl = currentBlobUrl;
             gameLabel = selectedLocalFile.name.replace(/\.[^/.]+$/, '');
         } else if (activeSourceType === 'catalog' && selectedCatalogItem) {
@@ -206,6 +208,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             romInfoStatus.innerHTML = '<span class="status-warn">⚠ Scegli una ROM dalla lista oppure seleziona un file ROM dal tuo dispositivo.</span>';
             return;
+        }
+
+        if (window.location.protocol === 'file:') {
+            romInfoStatus.innerHTML = '<span class="status-warn">⚠ Stai aprendo la pagina via file://. Avviala da IntelliJ (localhost) o GitHub Pages per evitare blocchi di rete del browser.</span>';
         }
 
         resetViewport();
@@ -220,7 +226,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.EJS_pathtodata = CDN_BASE;
         window.EJS_startOnLoaded = true;
         window.EJS_language = 'it';
-        // Abilita il gamepad virtuale touch su dispositivi mobili
+        window.EJS_threads = false; // Evita errori SharedArrayBuffer/CORS su hosting statici come GitHub Pages
         window.EJS_virtualGamepadSettings = { enabled: true };
 
         const loader = document.createElement('script');
@@ -234,7 +240,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         loader.onerror = () => {
             resetViewport();
-            romInfoStatus.innerHTML = '<span class="status-warn">✖ Errore nel caricamento di EmulatorJS (verifica connessione internet o file ROM).</span>';
+            romInfoStatus.innerHTML = '<span class="status-warn">✖ Errore nel caricamento del motore EmulatorJS dal CDN (disattiva eventuali AdBlock o verifica la connessione).</span>';
         };
 
         document.body.appendChild(loader);
