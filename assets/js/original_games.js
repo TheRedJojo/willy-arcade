@@ -1,6 +1,7 @@
 /**
- * RetroLab Arcade - 10 Giochi Originali con grafica Canvas dettagliata,
- * spiegazioni chiare, 3 livelli di difficoltà, 2P stesso schermo e 2P remoto (WebRTC).
+ * RetroLab Arcade - 10 Giochi Originali in HTML5 Canvas
+ * Include: spiegazione in pagina con pausa automatica, 3 difficoltà,
+ * 2P stesso schermo (Pulse Pong, Cyber Snake Slither, Star Collector) e 2P remoto (WebRTC).
  */
 const RetroGamesCatalog = [
     {
@@ -11,7 +12,7 @@ const RetroGamesCatalog = [
         bg: 'linear-gradient(135deg, #0b1936, #1e40af)',
         genre: 'Arcade Shooter',
         supports2P: false,
-        howToPlay: 'Muovi la navicella in basso e spara alle file di alieni in alto prima che scendano o ti colpiscano. Ogni ondata completata porta un bonus punti e accelera il ritmo.',
+        howToPlay: 'Muovi la navicella in basso e spara alle file di alieni in alto prima che scendano o ti colpiscano. Ogni ondata completata dà un bonus punti e aumenta la velocità.',
         desc: 'Abbatti le ondate aliene evitando i colpi nemici. Ritmo crescente a ogni ondata.',
         controlsHint: 'Frecce/A-D o Pad/Trascina: muovi • Spazio/Z/A: spara • P: pausa'
     },
@@ -23,21 +24,21 @@ const RetroGamesCatalog = [
         bg: 'linear-gradient(135deg, #24164d, #9d174d)',
         genre: 'Brick Breaker',
         supports2P: false,
-        howToPlay: 'Fai rimbalzare la sfera energetica sulla tua barra in basso per colpire e distruggere tutti i blocchi colorati in alto senza lasciar cadere la sfera sotto.',
+        howToPlay: 'Fai rimbalzare la sfera luminosa sulla tua barra in basso per colpire e distruggere tutti i blocchi colorati in alto senza lasciar cadere la sfera sotto.',
         desc: 'Rompi tutti i blocchi luminosi gestendo rimbalzi e angolazioni con la barra.',
         controlsHint: 'Frecce/A-D o Pad/Trascina: muovi barra • P: pausa'
     },
     {
         id: 'cyber_snake',
         name: 'Cyber Snake',
-        tag: 'CLASSIC',
+        tag: 'CLASSIC • 2P',
         icon: '🐍 💎',
         bg: 'linear-gradient(135deg, #064e3b, #0f766e)',
-        genre: 'Arcade Snake',
-        supports2P: false,
-        howToPlay: 'Guida il serpente sulla griglia e raccogli i cristalli rosa per fare punti e allungarti. Non colpire mai i bordi né il tuo stesso corpo.',
-        desc: 'Raccogli i cristalli allungandoti senza colpire bordi o coda.',
-        controlsHint: 'Frecce/WASD o D-Pad/Controller: sterza • P: pausa'
+        genre: 'Snake & Slither Arena',
+        supports2P: true,
+        howToPlay: 'Mangia i cristalli rosa per allungarti e fare punti senza colpire i bordi o i corpi dei serpenti. In 2P giocate insieme nell’arena in stile Slither (P1 ciano con WASD, P2 corallo con Frecce).',
+        desc: 'Allungati mangiando cristalli in 1P oppure sfida un amico nell’arena in stile Slither.',
+        controlsHint: '1P: Frecce/WASD/Pad • 2P: P1 WASD, P2 Frecce • P: pausa'
     },
     {
         id: 'sky_hopper',
@@ -59,7 +60,7 @@ const RetroGamesCatalog = [
         bg: 'linear-gradient(135deg, #311042, #701a75)',
         genre: 'Survival Shooter',
         supports2P: false,
-        howToPlay: 'Naviga nello spazio profondo in tutte le direzioni: schiva gli asteroidi che piovono verso di te e usa il raggio laser per frantumarli.',
+        howToPlay: 'Muoviti nello spazio in tutte le direzioni per schivare gli asteroidi e usa il raggio laser per distruggerli e aprirti un varco.',
         desc: 'Muoviti liberamente tra gli asteroidi e spara col laser per sopravvivere.',
         controlsHint: 'Frecce/WASD o Pad/Controller: muovi • Spazio/Z/A: spara'
     },
@@ -71,7 +72,7 @@ const RetroGamesCatalog = [
         bg: 'linear-gradient(135deg, #451a03, #b45309)',
         genre: 'Lane Racer',
         supports2P: false,
-        howToPlay: 'Guida su una strada a 3 corsie: spostati tra le corsie per schivare le auto/ostacoli rossi e tieni premuto Su o Azione per il turbo (più velocità e più punti).',
+        howToPlay: 'Guida su una strada a 3 corsie: spostati tra le corsie per evitare i veicoli/ostacoli rossi e tieni premuto Su o Azione per il turbo (più velocità e più punti).',
         desc: 'Cambia corsia evitando il traffico e attiva il turbo per moltiplicare i punti.',
         controlsHint: 'Frecce Sinistra-Destra o Pad: corsia • Su/Spazio/A: turbo'
     },
@@ -135,17 +136,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hudScore = document.getElementById('hud-score');
     const hudBest = document.getElementById('hud-best');
     const hudMode = document.getElementById('hud-mode');
-    const howToPlayEl = document.getElementById('game-how-to-play');
-    const controlsBanner = document.getElementById('game-controls-banner');
     const saveStatusEl = document.getElementById('game-save-status');
     const restartBtn = document.getElementById('btn-restart-game');
 
+    // Spiegazione nella pagina con pausa automatica
+    const guidePanel = document.getElementById('guide-panel');
+    const guideTitle = document.getElementById('guide-title');
+    const guideText = document.getElementById('guide-text');
+    const guideControls = document.getElementById('guide-controls');
+    const btnToggleGuide = document.getElementById('btn-toggle-guide');
+    const btnCloseGuide = document.getElementById('btn-close-guide');
+
+    // 2P Remoto
     const remotePanel = document.getElementById('remote-panel');
     const remoteSdpBox = document.getElementById('remote-sdp-box');
     const remoteStatusEl = document.getElementById('remote-conn-status');
+    const remoteEnvWarn = document.getElementById('remote-env-warning');
     const btnRemoteCreate = document.getElementById('btn-remote-create');
     const btnRemoteAnswer = document.getElementById('btn-remote-answer');
     const btnRemoteAccept = document.getElementById('btn-remote-accept');
+
+    if (remoteEnvWarn && window.location.protocol === 'file:') {
+        remoteEnvWarn.innerHTML = '⚠ Sei su <code>file://</code>: per il collegamento remoto apri il sito tramite server locale (es. IntelliJ / localhost) o GitHub Pages.';
+    }
 
     const DIFFICULTIES = {
         easy: { label: 'FACILE', speedMul: 0.78, enemyMul: 0.75, scoreMul: 0.85 },
@@ -159,6 +172,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let difficulty = 'normal';
     let playerMode = '1p'; // '1p' | '2p_local' | '2p_remote'
+    let pausedByGuide = false;
 
     const p1 = { up: false, down: false, left: false, right: false, action: false, secondary: false };
     const p2 = { up: false, down: false, left: false, right: false, action: false, secondary: false };
@@ -167,85 +181,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         p2Action: false, p2Secondary: false,
         pause: false, restart: false
     };
-
-    // WebRTC peer-to-peer per 2P remoto (nessun backend necessario)
-    let rtcPeer = null;
-    let rtcChannel = null;
-
-    function sendRemoteInput() {
-        if (rtcChannel && rtcChannel.readyState === 'open') {
-            rtcChannel.send(JSON.stringify({
-                type: 'input',
-                up: p1.up, down: p1.down, left: p1.left, right: p1.right,
-                action: p1.action, secondary: p1.secondary
-            }));
-        }
-    }
-
-    function setupDataChannel(ch) {
-        rtcChannel = ch;
-        ch.onopen = () => {
-            if (remoteStatusEl) remoteStatusEl.innerHTML = 'Stato: <span class="ok">✔ Connesso (2P Remoto)</span>';
-        };
-        ch.onclose = () => {
-            if (remoteStatusEl) remoteStatusEl.innerHTML = 'Stato: <code>disconnesso</code>';
-        };
-        ch.onmessage = (ev) => {
-            try {
-                const msg = JSON.parse(ev.data);
-                if (msg.type === 'input') {
-                    if (msg.action && !p2.action) justPressed.p2Action = true;
-                    if (msg.secondary && !p2.secondary) justPressed.p2Secondary = true;
-                    p2.up = Boolean(msg.up);
-                    p2.down = Boolean(msg.down);
-                    p2.left = Boolean(msg.left);
-                    p2.right = Boolean(msg.right);
-                    p2.action = Boolean(msg.action);
-                    p2.secondary = Boolean(msg.secondary);
-                }
-            } catch (_) {}
-        };
-    }
-
-    async function createRemoteOffer() {
-        rtcPeer = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-        setupDataChannel(rtcPeer.createDataChannel('retrolab'));
-        rtcPeer.onicecandidate = () => {
-            if (rtcPeer.localDescription && remoteSdpBox) {
-                remoteSdpBox.value = btoa(JSON.stringify(rtcPeer.localDescription));
-            }
-        };
-        const offer = await rtcPeer.createOffer();
-        await rtcPeer.setLocalDescription(offer);
-        if (remoteStatusEl) remoteStatusEl.innerHTML = 'Stato: <code>offerta pronta — copia codice per ospite</code>';
-    }
-
-    async function answerRemoteOffer() {
-        if (!remoteSdpBox?.value.trim()) return;
-        const remoteDesc = JSON.parse(atob(remoteSdpBox.value.trim()));
-        rtcPeer = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-        rtcPeer.ondatachannel = (e) => setupDataChannel(e.channel);
-        rtcPeer.onicecandidate = () => {
-            if (rtcPeer.localDescription && remoteSdpBox) {
-                remoteSdpBox.value = btoa(JSON.stringify(rtcPeer.localDescription));
-            }
-        };
-        await rtcPeer.setRemoteDescription(remoteDesc);
-        const ans = await rtcPeer.createAnswer();
-        await rtcPeer.setLocalDescription(ans);
-        if (remoteStatusEl) remoteStatusEl.innerHTML = 'Stato: <code>risposta pronta — invia all’host</code>';
-    }
-
-    async function acceptRemoteAnswer() {
-        if (!rtcPeer || !remoteSdpBox?.value.trim()) return;
-        const ansDesc = JSON.parse(atob(remoteSdpBox.value.trim()));
-        await rtcPeer.setRemoteDescription(ansDesc);
-        if (remoteStatusEl) remoteStatusEl.innerHTML = 'Stato: <code>collegamento in corso...</code>';
-    }
-
-    btnRemoteCreate?.addEventListener('click', createRemoteOffer);
-    btnRemoteAnswer?.addEventListener('click', answerRemoteOffer);
-    btnRemoteAccept?.addEventListener('click', acceptRemoteAnswer);
 
     let audioCtx = null;
     function beep(freq = 440, type = 'square', dur = 0.05, vol = 0.03) {
@@ -297,6 +232,144 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    function openGuideWithPause() {
+        const meta = getMeta();
+        if (guideTitle) guideTitle.textContent = `Come si gioca — ${meta.name}`;
+        if (guideText) guideText.textContent = meta.howToPlay;
+        if (guideControls) guideControls.innerHTML = `<strong>Comandi:</strong> ${meta.controlsHint}`;
+        if (guidePanel) guidePanel.classList.add('open');
+
+        if (mode === 'PLAYING') {
+            mode = 'PAUSED';
+            pausedByGuide = true;
+            syncHud();
+        }
+    }
+
+    function closeGuideAndResume() {
+        if (guidePanel) guidePanel.classList.remove('open');
+        if (pausedByGuide && mode === 'PAUSED') {
+            mode = 'PLAYING';
+            pausedByGuide = false;
+            lastTs = performance.now();
+            syncHud();
+        }
+    }
+
+    btnToggleGuide?.addEventListener('click', () => {
+        if (guidePanel?.classList.contains('open')) closeGuideAndResume();
+        else openGuideWithPause();
+    });
+    btnCloseGuide?.addEventListener('click', closeGuideAndResume);
+
+    // WebRTC peer-to-peer per 2P remoto
+    let rtcPeer = null;
+    let rtcChannel = null;
+
+    function sendRemoteInput() {
+        if (rtcChannel && rtcChannel.readyState === 'open') {
+            rtcChannel.send(JSON.stringify({
+                type: 'input',
+                up: p1.up, down: p1.down, left: p1.left, right: p1.right,
+                action: p1.action, secondary: p1.secondary
+            }));
+        }
+    }
+
+    function setupDataChannel(ch) {
+        rtcChannel = ch;
+        ch.onopen = () => {
+            if (remoteStatusEl) remoteStatusEl.innerHTML = 'Stato: <span class="ok">✔ Connesso (2P Remoto)</span>';
+        };
+        ch.onclose = () => {
+            if (remoteStatusEl) remoteStatusEl.innerHTML = 'Stato: <code>disconnesso</code>';
+        };
+        ch.onmessage = (ev) => {
+            try {
+                const msg = JSON.parse(ev.data);
+                if (msg.type === 'input') {
+                    if (msg.action && !p2.action) justPressed.p2Action = true;
+                    if (msg.secondary && !p2.secondary) justPressed.p2Secondary = true;
+                    p2.up = Boolean(msg.up);
+                    p2.down = Boolean(msg.down);
+                    p2.left = Boolean(msg.left);
+                    p2.right = Boolean(msg.right);
+                    p2.action = Boolean(msg.action);
+                    p2.secondary = Boolean(msg.secondary);
+                }
+            } catch (_) {}
+        };
+    }
+
+    function waitIceComplete(pc) {
+        return new Promise((resolve) => {
+            if (pc.iceGatheringState === 'complete') return resolve();
+            const timer = setTimeout(resolve, 1800);
+            pc.addEventListener('icegatheringstatechange', () => {
+                if (pc.iceGatheringState === 'complete') {
+                    clearTimeout(timer);
+                    resolve();
+                }
+            });
+        });
+    }
+
+    btnRemoteCreate?.addEventListener('click', async () => {
+        try {
+            if (remoteStatusEl) remoteStatusEl.innerHTML = 'Stato: <code>creazione offerta...</code>';
+            rtcPeer = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+            setupDataChannel(rtcPeer.createDataChannel('retrolab'));
+            const offer = await rtcPeer.createOffer();
+            await rtcPeer.setLocalDescription(offer);
+            await waitIceComplete(rtcPeer);
+            if (remoteSdpBox && rtcPeer.localDescription) {
+                remoteSdpBox.value = btoa(JSON.stringify(rtcPeer.localDescription));
+            }
+            if (remoteStatusEl) remoteStatusEl.innerHTML = 'Stato: <span class="ok">Offerta creata — copiala e inviala</span>';
+        } catch (err) {
+            if (remoteStatusEl) remoteStatusEl.innerHTML = `Stato: <span class="warn">Errore offerta (${err.message || 'WebRTC'})</span>`;
+        }
+    });
+
+    btnRemoteAnswer?.addEventListener('click', async () => {
+        try {
+            const raw = remoteSdpBox?.value.trim() || '';
+            if (!raw) {
+                if (remoteStatusEl) remoteStatusEl.innerHTML = 'Stato: <span class="warn">Incolla prima il codice offerta</span>';
+                return;
+            }
+            if (remoteStatusEl) remoteStatusEl.innerHTML = 'Stato: <code>generazione risposta...</code>';
+            const remoteDesc = JSON.parse(atob(raw));
+            rtcPeer = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+            rtcPeer.ondatachannel = (e) => setupDataChannel(e.channel);
+            await rtcPeer.setRemoteDescription(remoteDesc);
+            const ans = await rtcPeer.createAnswer();
+            await rtcPeer.setLocalDescription(ans);
+            await waitIceComplete(rtcPeer);
+            if (remoteSdpBox && rtcPeer.localDescription) {
+                remoteSdpBox.value = btoa(JSON.stringify(rtcPeer.localDescription));
+            }
+            if (remoteStatusEl) remoteStatusEl.innerHTML = 'Stato: <span class="ok">Risposta creata — rimandala all’Host</span>';
+        } catch (err) {
+            if (remoteStatusEl) remoteStatusEl.innerHTML = `Stato: <span class="warn">Codice offerta non valido</span>`;
+        }
+    });
+
+    btnRemoteAccept?.addEventListener('click', async () => {
+        try {
+            const raw = remoteSdpBox?.value.trim() || '';
+            if (!rtcPeer || !raw) {
+                if (remoteStatusEl) remoteStatusEl.innerHTML = 'Stato: <span class="warn">Crea prima l’offerta e incolla la risposta</span>';
+                return;
+            }
+            const ansDesc = JSON.parse(atob(raw));
+            await rtcPeer.setRemoteDescription(ansDesc);
+            if (remoteStatusEl) remoteStatusEl.innerHTML = 'Stato: <code>collegamento in corso...</code>';
+        } catch (err) {
+            if (remoteStatusEl) remoteStatusEl.innerHTML = `Stato: <span class="warn">Codice risposta non valido</span>`;
+        }
+    });
+
     function addPoints(pts) {
         const gained = Math.max(5, Math.round(pts * diffSpec().scoreMul));
         score += gained;
@@ -324,7 +397,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Grafica sfondi arcade
     function drawArcadeBg() {
         const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
         grad.addColorStop(0, '#070d1c');
@@ -342,7 +414,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // --- 10 MOTORI DI GIOCO CON GRAFICHE DETTAGLIATE ---
+    // --- 10 MOTORI DI GIOCO ---
     function createSpaceDefender() {
         const d = diffSpec();
         const p = { x: canvas.width / 2 - 24, y: canvas.height - 52, w: 48, h: 26, speed: 420 * d.speedMul };
@@ -409,7 +481,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             },
             draw() {
                 drawArcadeBg();
-                // Navicella giocatore
                 ctx.fillStyle = '#22d3ee';
                 ctx.beginPath();
                 ctx.moveTo(p.x + p.w / 2, p.y - 6);
@@ -420,7 +491,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ctx.fillStyle = '#f8fafc';
                 ctx.fillRect(p.x + p.w / 2 - 4, p.y + 7, 8, 8);
 
-                // Alieni con visiera
                 enemies.forEach(e => {
                     ctx.fillStyle = e.color;
                     ctx.fillRect(e.x, e.y, e.w, e.h);
@@ -504,55 +574,92 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     }
 
+    // Cyber Snake: 1P classico e 2P arena stile Slither.io
     function createCyberSnake() {
         const d = diffSpec();
-        const cell = 20, cols = Math.floor(canvas.width / cell), rows = Math.floor(canvas.height / cell);
-        let snake = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
-        let dir = { x: 1, y: 0 }, timer = 0, step = 0.12 / d.enemyMul;
+        const isTwoPlayers = playerMode === '2p_local' || playerMode === '2p_remote';
+        const cell = 18, cols = Math.floor(canvas.width / cell), rows = Math.floor(canvas.height / cell);
+
+        let s1 = [{ x: 10, y: 12 }, { x: 9, y: 12 }, { x: 8, y: 12 }];
+        let dir1 = { x: 1, y: 0 };
+
+        let s2 = [{ x: cols - 11, y: 12 }, { x: cols - 10, y: 12 }, { x: cols - 9, y: 12 }];
+        let dir2 = { x: -1, y: 0 };
+
+        let timer = 0, step = 0.11 / d.enemyMul;
         const spawnFood = () => ({ x: Math.floor(Math.random() * cols), y: Math.floor(Math.random() * rows) });
-        let food = spawnFood();
+        let foods = Array.from({ length: isTwoPlayers ? 5 : 2 }, spawnFood);
+
+        const stepSnake = (snake, dir, otherSnake) => {
+            const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+            const hitWall = head.x < 0 || head.x >= cols || head.y < 0 || head.y >= rows;
+            const hitSelf = snake.some(s => s.x === head.x && s.y === head.y);
+            const hitOther = otherSnake && otherSnake.some(s => s.x === head.x && s.y === head.y);
+            if (hitWall || hitSelf || hitOther) return { dead: true, head };
+
+            snake.unshift(head);
+            const fIdx = foods.findIndex(f => f.x === head.x && f.y === head.y);
+            if (fIdx !== -1) {
+                foods[fIdx] = spawnFood();
+                addPoints(150);
+                beep(700, 'square', 0.055, 0.035);
+            } else {
+                snake.pop();
+            }
+            return { dead: false, head };
+        };
+
         return {
             update(dt) {
-                if (p1.up && dir.y !== 1) dir = { x: 0, y: -1 };
-                else if (p1.down && dir.y !== -1) dir = { x: 0, y: 1 };
-                else if (p1.left && dir.x !== 1) dir = { x: -1, y: 0 };
-                else if (p1.right && dir.x !== -1) dir = { x: 1, y: 0 };
+                if (p1.up && dir1.y !== 1) dir1 = { x: 0, y: -1 };
+                else if (p1.down && dir1.y !== -1) dir1 = { x: 0, y: 1 };
+                else if (p1.left && dir1.x !== 1) dir1 = { x: -1, y: 0 };
+                else if (p1.right && dir1.x !== -1) dir1 = { x: 1, y: 0 };
+
+                if (isTwoPlayers) {
+                    if (p2.up && dir2.y !== 1) dir2 = { x: 0, y: -1 };
+                    else if (p2.down && dir2.y !== -1) dir2 = { x: 0, y: 1 };
+                    else if (p2.left && dir2.x !== 1) dir2 = { x: -1, y: 0 };
+                    else if (p2.right && dir2.x !== -1) dir2 = { x: 1, y: 0 };
+                }
 
                 timer += dt;
                 if (timer < step) return;
                 timer = 0;
 
-                const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
-                if (head.x < 0 || head.x >= cols || head.y < 0 || head.y >= rows || snake.some(s => s.x === head.x && s.y === head.y)) {
-                    finishGame();
-                    return;
-                }
-                snake.unshift(head);
-                if (head.x === food.x && head.y === food.y) {
-                    addPoints(150);
-                    step = Math.max(0.055, step * 0.965);
-                    food = spawnFood();
-                    beep(700, 'square', 0.055, 0.035);
-                } else {
-                    snake.pop();
+                const r1 = stepSnake(s1, dir1, isTwoPlayers ? s2 : null);
+                if (r1.dead) { finishGame(); return; }
+
+                if (isTwoPlayers) {
+                    const r2 = stepSnake(s2, dir2, s1);
+                    if (r2.dead) { addPoints(300); finishGame(); return; }
                 }
             },
             draw() {
                 drawArcadeBg();
-                ctx.fillStyle = '#fb7185';
-                ctx.beginPath();
-                ctx.arc(food.x * cell + cell / 2, food.y * cell + cell / 2, cell * 0.42, 0, Math.PI * 2);
-                ctx.fill();
-
-                snake.forEach((s, i) => {
-                    ctx.fillStyle = i === 0 ? '#22d3ee' : '#34d399';
-                    ctx.fillRect(s.x * cell + 2, s.y * cell + 2, cell - 4, cell - 4);
-                    if (i === 0) {
-                        ctx.fillStyle = '#050811';
-                        ctx.fillRect(s.x * cell + 6, s.y * cell + 6, 3, 3);
-                        ctx.fillRect(s.x * cell + 11, s.y * cell + 6, 3, 3);
-                    }
+                foods.forEach(f => {
+                    ctx.fillStyle = '#fbbf24';
+                    ctx.beginPath();
+                    ctx.arc(f.x * cell + cell / 2, f.y * cell + cell / 2, cell * 0.42, 0, Math.PI * 2);
+                    ctx.fill();
                 });
+
+                const drawBody = (snake, headCol, bodyCol) => {
+                    snake.forEach((s, i) => {
+                        ctx.fillStyle = i === 0 ? headCol : bodyCol;
+                        ctx.beginPath();
+                        ctx.arc(s.x * cell + cell / 2, s.y * cell + cell / 2, (cell / 2) - 1, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+                };
+
+                drawBody(s1, '#22d3ee', '#34d399');
+                if (isTwoPlayers) drawBody(s2, '#fb7185', '#c084fc');
+
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = '13px Inter, sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(isTwoPlayers ? 'Arena Slither 2P: P1 Ciano (WASD) vs P2 Corallo (Frecce)' : 'Modalità 1P', 16, 24);
             }
         };
     }
@@ -725,7 +832,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     }
 
-    // Pulse Pong: supporta 1P vs CPU, 2P stesso schermo e 2P remoto
     function createPulsePong() {
         const d = diffSpec();
         const isTwoPlayers = playerMode === '2p_local' || playerMode === '2p_remote';
@@ -799,7 +905,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     }
 
-    // Star Collector: supporta 1P e 2P (stesso schermo / remoto)
     function createStarCollector() {
         const d = diffSpec();
         const isTwoPlayers = playerMode === '2p_local' || playerMode === '2p_remote';
@@ -973,13 +1078,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         if (btn2p) btn2p.disabled = !meta.supports2P;
         if (btnRem) btnRem.disabled = !meta.supports2P;
-        document.querySelectorAll('[data-pmode]').forEach(b => b.classList.toggle('active', b.dataset.pmode === playerMode));
-        remotePanel?.classList.toggle('open', meta.supports2P && playerMode === '2p_remote');
+
+        document.querySelectorAll('[data-pmode]').forEach(b => {
+            b.classList.toggle('active', b.dataset.pmode === playerMode);
+        });
+        if (remotePanel) {
+            remotePanel.classList.toggle('open', Boolean(meta.supports2P && playerMode === '2p_remote'));
+        }
     }
 
     async function loadGame(gameId) {
         currentGameId = FACTORIES[gameId] ? gameId : 'space_defender';
         const meta = getMeta();
+        pausedByGuide = false;
+        guidePanel?.classList.remove('open');
+
         refreshModeAvailability();
 
         score = 0;
@@ -988,8 +1101,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         bestScore = typeof RetroStorage !== 'undefined' ? await RetroStorage.getBestScore(currentGameId) : 0;
         engine = FACTORIES[currentGameId]();
 
-        if (howToPlayEl) howToPlayEl.innerHTML = `<strong>Come si gioca:</strong> ${meta.howToPlay}`;
-        if (controlsBanner) controlsBanner.innerHTML = `<strong>Comandi:</strong> ${meta.controlsHint}`;
         if (saveStatusEl) {
             saveStatusEl.innerHTML = 'Tastiera: <strong>Frecce / WASD</strong> • <strong>Spazio / Z / Invio</strong> • <strong>2P Stesso Schermo</strong>: P1 <strong>W/A/S/D + F</strong>, P2 <strong>Frecce + L</strong> • <strong>Controller Bluetooth/USB</strong>';
         }
@@ -1115,6 +1226,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('pad-b')?.addEventListener('click', () => {
         if (mode === 'PLAYING' || mode === 'PAUSED') {
+            pausedByGuide = false;
             mode = mode === 'PLAYING' ? 'PAUSED' : 'PLAYING';
             syncHud();
         }
@@ -1169,7 +1281,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (justPressed.pause) {
             justPressed.pause = false;
             if (mode === 'PLAYING') { mode = 'PAUSED'; syncHud(); }
-            else if (mode === 'PAUSED') { mode = 'PLAYING'; lastTs = performance.now(); syncHud(); }
+            else if (mode === 'PAUSED') { mode = 'PLAYING'; pausedByGuide = false; guidePanel?.classList.remove('open'); lastTs = performance.now(); syncHud(); }
         }
 
         if (mode === 'PLAYING' && engine) engine.update(dt);
