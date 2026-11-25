@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RetroLab Arcade | Portale Giochi HTML5 &amp; Emulatore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body>
+<div class="crt-overlay" aria-hidden="true"></div>
+
+<header class="site-header">
+  <div class="container header-content">
+    <a href="./index.html" class="brand">
+      <span class="brand-icon">👾</span>
+      <span class="brand-text">RetroLab <span class="neon-cyan">Arcade</span></span>
+    </a>
+    <nav class="main-nav" aria-label="Navigazione principale">
+      <a href="./index.html" class="nav-link active">Catalogo</a>
+      <a href="./play_original.html" class="nav-link">Giochi Originali</a>
+      <a href="./play_retro.html" class="nav-link">Retro Emulator</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container main-content">
+  <section class="hero-banner">
+    <div class="hero-badge">100% STATIC WEB • HTML5 CANVAS • EMULATORJS</div>
+    <h1 class="hero-title">INSERT COIN TO <span class="neon-pink">PLAY</span></h1>
+    <p class="hero-subtitle">
+      Esplora mini-giochi originali sviluppati in JavaScript Vanilla oppure carica le tue ROM homebrew NES, SNES e Game Boy direttamente nel browser.
+    </p>
+    <div class="hero-actions">
+      <a href="./play_original.html" class="btn btn-primary">Gioca a Space Defender</a>
+      <a href="./play_retro.html" class="btn btn-secondary">Apri Emulatore Retro</a>
+    </div>
+  </section>
+
+  <section class="catalog-section" aria-labelledby="original-games-heading">
+    <div class="section-header">
+      <h2 id="original-games-heading" class="section-title">
+        <span class="neon-cyan">//</span> Giochi Originali (HTML5 Canvas)
+      </h2>
+      <span class="section-tag">JS Vanilla ES6+</span>
+    </div>
+
+    <div class="games-grid">
+      <article class="game-card">
+        <div class="card-banner banner-space">
+          <span class="card-badge">ORIGINALE</span>
+          <div class="pixel-art-preview">🚀 🛸 💥</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">Space Defender</h3>
+          <p class="card-desc">
+            Difendi il settore dallo sciame alieno. Spara, schiva le ondate nemiche e scala la classifica locale.
+          </p>
+          <div class="card-meta">
+            <span>Comandi: Frecce / A-D + Spazio</span>
+            <span id="card-space-best" class="meta-record">Record: 0</span>
+          </div>
+          <div class="card-actions">
+            <a href="./play_original.html" class="btn btn-primary btn-full">Avvia Gioco</a>
+            <button type="button" class="btn btn-icon fav-toggle" data-game-id="space_defender" aria-label="Aggiungi Space Defender ai preferiti" title="Preferito">
+              ☆
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="game-card card-coming-soon">
+        <div class="card-banner banner-locked">
+          <span class="card-badge badge-muted">PROSSIMAMENTE</span>
+          <div class="pixel-art-preview">🧱 🏓 ⚡</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">Neon Breakout</h3>
+          <p class="card-desc">
+            Slot predisposto per il tuo prossimo mini-gioco Canvas. Architettura modulare pronta per nuove cartucce JS.
+          </p>
+          <div class="card-meta">
+            <span>Modulo: In sviluppo</span>
+            <span class="meta-record">v1.1</span>
+          </div>
+          <div class="card-actions">
+            <button type="button" class="btn btn-disabled btn-full" disabled>In Arrivo</button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="catalog-section" aria-labelledby="retro-emulator-heading">
+    <div class="section-header">
+      <h2 id="retro-emulator-heading" class="section-title">
+        <span class="neon-pink">//</span> Retro Emulator (WebAssembly)
+      </h2>
+      <span class="section-tag">NES • SNES • GB / GBC</span>
+    </div>
+
+    <div class="games-grid">
+      <article class="game-card">
+        <div class="card-banner banner-nes">
+          <span class="card-badge badge-pink">8-BIT</span>
+          <div class="pixel-art-preview">🎮 NES</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">Nintendo Entertainment System</h3>
+          <p class="card-desc">
+            Avvia file <code>.nes</code> locali o test homebrew direttamente nel browser con supporto gamepad e salvataggi.
+          </p>
+          <div class="card-actions">
+            <a href="./play_retro.html?core=nes" class="btn btn-secondary btn-full">Carica ROM NES</a>
+            <button type="button" class="btn btn-icon fav-toggle" data-game-id="emu_nes" aria-label="Aggiungi NES ai preferiti" title="Preferito">
+              ☆
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="game-card">
+        <div class="card-banner banner-snes">
+          <span class="card-badge badge-pink">16-BIT</span>
+          <div class="pixel-art-preview">🕹️ SNES</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">Super Nintendo (SNES)</h3>
+          <p class="card-desc">
+            Emulazione fluida a 60fps per file <code>.sfc</code> e <code>.smc</code> tramite core WebAssembly su client.
+          </p>
+          <div class="card-actions">
+            <a href="./play_retro.html?core=snes" class="btn btn-secondary btn-full">Carica ROM SNES</a>
+            <button type="button" class="btn btn-icon fav-toggle" data-game-id="emu_snes" aria-label="Aggiungi SNES ai preferiti" title="Preferito">
+              ☆
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="game-card">
+        <div class="card-banner banner-gb">
+          <span class="card-badge badge-pink">PORTABLE</span>
+          <div class="pixel-art-preview">📟 GB / GBC</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">Game Boy &amp; Game Boy Color</h3>
+          <p class="card-desc">
+            Riproduci titoli homebrew <code>.gb</code> e <code>.gbc</code> con palette classica e controlli touch/tastiera.
+          </p>
+          <div class="card-actions">
+            <a href="./play_retro.html?core=gb" class="btn btn-secondary btn-full">Carica ROM GB</a>
+            <button type="button" class="btn btn-icon fav-toggle" data-game-id="emu_gb" aria-label="Aggiungi Game Boy ai preferiti" title="Preferito">
+              ☆
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="scoreboard-section" aria-labelledby="scoreboard-heading">
+    <div class="section-header">
+      <h2 id="scoreboard-heading" class="section-title">
+        <span class="neon-green">//</span> Hall of Fame Locale &amp; Integrità Dati
+      </h2>
+      <span class="section-tag">localStorage + Web Crypto SHA-256</span>
+    </div>
+
+    <div class="panel">
+      <div class="table-responsive">
+        <table class="arcade-table">
+          <thead>
+          <tr>
+            <th>Pos</th>
+            <th>Gioco</th>
+            <th>Punteggio</th>
+            <th>Data</th>
+            <th>Digest SHA-256 (Parziale)</th>
+          </tr>
+          </thead>
+          <tbody id="scoreboard-body">
+          <tr>
+            <td colspan="5" class="empty-state">Nessun record registrato. Gioca una partita per salvare il tuo punteggio!</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="storage-controls">
+        <div class="crypto-status" id="crypto-status">
+          Stato integrità salvataggi: in attesa di verifica...
+        </div>
+        <div class="storage-buttons">
+          <button type="button" id="btn-export-data" class="btn btn-outline">
+            Esporta Salvataggi (JSON + SHA-256)
+          </button>
+          <button type="button" id="btn-reset-data" class="btn btn-danger">
+            Azzera Dati Locali
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-content">
+    <p>RetroLab Arcade &copy; 2026 — Progetto Static Web compatibile con GitHub Pages.</p>
+    <p class="footer-note">Nessun dato viene inviato a server esterni: punteggi e ROM restano esclusivamente nel tuo browser.</p>
+  </div>
+</footer>
+
+<script src="./assets/js/storage_crypto.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    if (typeof RetroStorage === 'undefined') return;
+
+    const renderDashboard = async () => {
+      const state = await RetroStorage.loadAndVerifyState();
+      const statusEl = document.getElementById('crypto-status');
+      const tbody = document.getElementById('scoreboard-body');
+      const cardBestEl = document.getElementById('card-space-best');
+
+      if (state.isValid) {
+        statusEl.innerHTML = `<span class="status-ok">✔ Integrità verificata (SHA-256: ${state.digest.slice(0, 16)}...)</span>`;
+      } else {
+        statusEl.innerHTML = `<span class="status-warn">⚠ Dati locali inizializzati o modificati manualmente</span>`;
+      }
+
+      const spaceScores = state.data.scores.filter(s => s.gameId === 'space_defender');
+      const bestSpace = spaceScores.length > 0 ? Math.max(...spaceScores.map(s => s.score)) : 0;
+      if (cardBestEl) {
+        cardBestEl.textContent = `Record: ${bestSpace}`;
+      }
+
+      document.querySelectorAll('.fav-toggle').forEach(btn => {
+        const gameId = btn.dataset.gameId;
+        const isFav = state.data.favorites.includes(gameId);
+        btn.textContent = isFav ? '★' : '☆';
+        btn.classList.toggle('is-favorite', isFav);
+      });
+
+      const sortedScores = [...state.data.scores]
+              .sort((a, b) => b.score - a.score)
+              .slice(0, 10);
+
+      if (sortedScores.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Nessun record registrato. Gioca una partita per salvare il tuo punteggio!</td></tr>`;
+      } else {
+        tbody.innerHTML = sortedScores.map((entry, idx) => `
+                        <tr>
+                            <td class="rank-cell">#${idx + 1}</td>
+                            <td>${entry.gameName}</td>
+                            <td class="score-cell">${entry.score.toLocaleString('it-IT')}</td>
+                            <td>${new Date(entry.timestamp).toLocaleDateString('it-IT')}</td>
+                            <td><code>${(entry.hash || state.digest).slice(0, 14)}...</code></td>
+                        </tr>
+                    `).join('');
+      }
+    };
+
+    document.querySelectorAll('.fav-toggle').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        await RetroStorage.toggleFavorite(btn.dataset.gameId);
+        await renderDashboard();
+      });
+    });
+
+    document.getElementById('btn-export-data').addEventListener('click', async () => {
+      const exportPayload = await RetroStorage.exportSignedBackup();
+      const blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `retrolab-backup-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('btn-reset-data').addEventListener('click', async () => {
+      if (confirm('Vuoi davvero cancellare tutti i record e i preferiti salvati in questo browser?')) {
+        await RetroStorage.resetAll();
+        await renderDashboard();
+      }
+    });
+
+    await renderDashboard();
+  });
+</script>
+</body>
+</html>
